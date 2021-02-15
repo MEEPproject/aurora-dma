@@ -53,6 +53,10 @@ set root_dir [ pwd ]
 # you can create a design using the following command:
 #    create_bd_design -dir {${root_dir}/bd} ${design_name}BD
 
+add_files -norecurse $root_dir/ip/aurora_64b66b_0/aurora_64b66b_0.xci
+add_files -norecurse $root_dir/ip/vio_0/vio_0.xci
+
+
 # Creating design if needed
 set errMsg ""
 set nRet 0
@@ -142,6 +146,9 @@ set g_top_name aurora_user_interface_top
 
 set top_module "$root_dir/src/${g_top_name}.vhd"
 add_files ${top_module}
+add_files -norecurse "$root_dir/src/$frame_gen.vhd"
+add_files -norecurse "$root_dir/src/$frame_check.vhd"
+add_files -norecurse "$root_dir/src/$reset_block.vhd"
 
 # Add Constraint files to project
 add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
