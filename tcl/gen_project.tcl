@@ -127,13 +127,12 @@ set_property  ip_repo_paths  $ip_dir_list [current_project]
 
 update_ip_catalog -rebuild
 
-source $root_dir/tcl/gen_bd.tcl
+#source $root_dir/tcl/gen_bd.tcl
+#create_root_design ""
 
-create_root_design ""
 
-
-validate_bd_design
-save_bd_design
+#validate_bd_design
+#save_bd_design
 
 
 ##################################################################
@@ -145,16 +144,18 @@ save_bd_design
 set g_top_name aurora_user_interface_top
 
 set top_module "$root_dir/src/${g_top_name}.vhd"
-add_files ${top_module}
-add_files -norecurse "$root_dir/src/$frame_gen.vhd"
-add_files -norecurse "$root_dir/src/$frame_check.vhd"
-add_files -norecurse "$root_dir/src/$reset_block.vhd"
+#add_files ${top_module}
+set src_files [glob ${root_dir}/src/*]
+add_files $src_files
 
 # Add Constraint files to project
 add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
 add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_timing.xdc"
 add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_ila.xdc"
 set_property target_language VHDL [current_project]
+
+#Add files simulation
+add_files -fileset sim_1 ./sim/aurora_user_interface_top_tb.vhd
 
 
 puts "Project generation ended successfully"
