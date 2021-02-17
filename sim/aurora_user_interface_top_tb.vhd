@@ -43,8 +43,9 @@ architecture testbench of aurora_user_interface_top_tb is
   signal RESET          : std_logic;
   signal GT_REFCLK1_N   : std_logic;
   signal GT_REFCLK1_P   : std_logic;
-  signal INIT_CLK_P     : std_logic;
-  signal INIT_CLK_N     : std_logic;
+  signal RESETN         : std_logic;
+  signal GTY_SYSCLKP_I  : std_logic;
+  signal GTY_SYSCLKN_I  : std_logic;  
   signal TXN_0          : std_logic_vector(0 downto 0);
   signal TXP_0          : std_logic_vector(0 downto 0);
   signal TXN_1          : std_logic_vector(0 downto 0);
@@ -53,11 +54,10 @@ architecture testbench of aurora_user_interface_top_tb is
   signal RXP_0          : std_logic_vector(0 downto 0);
   signal RXN_1          : std_logic_vector(0 downto 0);
   signal RXP_1          : std_logic_vector(0 downto 0);
-  signal DATA_ERR_COUNT : std_logic_vector(7 downto 0);
   signal HBM_CATTRIP    : std_logic;
   -- clock
 
-  constant Tclk_init  : time := 6.206 ns;
+  constant Tclk_init  : time := 10 ns;--6.206 ns;
   constant Tclk_gtRef : time := 6.4 ns;
 
 begin  -- architecture testbench
@@ -78,13 +78,13 @@ begin  -- architecture testbench
       RESET          => RESET,
       GT_REFCLK1_N   => GT_REFCLK1_N,
       GT_REFCLK1_P   => GT_REFCLK1_P,
-      INIT_CLK_P     => INIT_CLK_P,
-      INIT_CLK_N     => INIT_CLK_N,
+      RESETN         => RESETN,
+      GTY_SYSCLKP_I  => GTY_SYSCLKP_I,
+      GTY_SYSCLKN_I  => GTY_SYSCLKN_I,
       TXN            => TXN_0,
       TXP            => TXP_0,
       RXN            => RXN_0,
-      RXP            => RXP_0,
-      DATA_ERR_COUNT => DATA_ERR_COUNT,
+      RXP            => RXP_0,      
       HBM_CATTRIP    => HBM_CATTRIP);
 
   DUT_1 : entity work.aurora_user_interface_top
@@ -94,25 +94,24 @@ begin  -- architecture testbench
       RESET          => RESET,
       GT_REFCLK1_N   => GT_REFCLK1_N,
       GT_REFCLK1_P   => GT_REFCLK1_P,
-      INIT_CLK_P     => INIT_CLK_P,
-      INIT_CLK_N     => INIT_CLK_N,
+      RESETN         => RESETN,
+      GTY_SYSCLKP_I  => GTY_SYSCLKP_I,
+      GTY_SYSCLKN_I  => GTY_SYSCLKN_I,
       TXN            => TXN_1,
       TXP            => TXP_1,
       RXN            => RXN_1,
       RXP            => RXP_1,
-      DATA_ERR_COUNT => DATA_ERR_COUNT,
       HBM_CATTRIP    => HBM_CATTRIP);
 
 
   -- clock generation
   process
   begin
-    INIT_CLK_P <= '0';
-    INIT_CLK_N <= '1';
-    wait for Tclk_init/2;
-
-    INIT_CLK_P <= '1';
-    INIT_CLK_N <= '0';
+    GTY_SYSCLKP_I <='0';
+    GTY_SYSCLKN_I <='1';
+    wait for Tclk_init/2;    
+    GTY_SYSCLKP_I <='1';
+    GTY_SYSCLKN_I <='0';
     wait for Tclk_init/2;
 
   end process;
@@ -133,12 +132,15 @@ begin  -- architecture testbench
   WaveGen_Proc : process
   begin
     -- insert signal assignments here
+    RESETN      <= '0';
     RESET       <= '1';
+    wait until GTY_SYSCLKP_I'event and GTY_SYSCLKP_I = '1';
+    RESETN      <= '1';    
     wait for 4*Tclk_init;
-    wait until INIT_CLK_P'event and INIT_CLK_P = '1';
+    wait until GTY_SYSCLKP_I'event and GTY_SYSCLKP_I = '1';
     RESET       <= '0';
     wait for 8000*Tclk_init;
-    wait until INIT_CLK_P'event and INIT_CLK_P = '1';
+    wait until GTY_SYSCLKP_I'event and GTY_SYSCLKP_I = '1';
     -- end simulation
     wait for 2*Tclk_init;
     assert false

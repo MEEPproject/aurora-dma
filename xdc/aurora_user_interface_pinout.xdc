@@ -6,6 +6,14 @@ set_clock_groups -asynchronous -group [get_clocks gt_refclk1_in -include_generat
 set_property PACKAGE_PIN T43            [get_ports GT_REFCLK1_N]                 ;# Bank 134 - MGTREFCLK0N_134
 set_property PACKAGE_PIN T42            [get_ports GT_REFCLK1_P]                 ;# Bank 134 - MGTREFCLK0P_134
 
+# System clock pin
+
+set_property PACKAGE_PIN BJ43            [get_ports GTY_SYSCLKP_I]                 ;# Bank 65 VCCO
+set_property IOSTANDARD LVDS             [get_ports GTY_SYSCLKP_I]                 ;# Bank 65 VCCO
+set_property PACKAGE_PIN BJ44            [get_ports GTY_SYSCLKN_I]                 ;# Bank 65 VCCO
+set_property IOSTANDARD LVDS             [get_ports GTY_SYSCLKN_I]                 ;# Bank 65 VCCO
+
+
 
 # Bitstream Configuration
 # ------------------------------------------------------------------------

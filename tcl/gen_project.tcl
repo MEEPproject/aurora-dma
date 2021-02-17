@@ -55,7 +55,7 @@ set root_dir [ pwd ]
 
 add_files -norecurse $root_dir/ip/aurora_64b66b_0/aurora_64b66b_0.xci
 add_files -norecurse $root_dir/ip/vio_0/vio_0.xci
-
+add_files -norecurse $root_dir/ip/clk_wiz_0/clk_wiz_0.xci
 
 # Creating design if needed
 set errMsg ""

@@ -46,10 +46,11 @@ entity aurora_user_interface_top is
     GT_REFCLK1_N : in  std_logic;
     GT_REFCLK1_P : in  std_logic;
     -------------------------------------------------------------------------------
-    -- INIT_CLK: 
-    -------------------------------------------------------------------------------        
-    INIT_CLK_P   : in  std_logic;
-    INIT_CLK_N   : in  std_logic;  
+    -- INIT_CLK: Clock wizard
+    -------------------------------------------------------------------------------
+    RESETN       : in std_logic;        
+    GTY_SYSCLKP_I: in std_logic;  
+    GTY_SYSCLKN_I: in std_logic; 
     ----------------------------------------------------------------------------
     -- GT SERIAL TX
     ----------------------------------------------------------------------------
@@ -61,9 +62,6 @@ entity aurora_user_interface_top is
     RXN : in std_logic_vector(0 downto 0);
     RXP : in std_logic_vector(0 downto 0);
     ----------------------------------------------------------------------------
-    -- Frame Checker
-    ----------------------------------------------------------------------------
-    DATA_ERR_COUNT : out std_logic_vector(7 downto 0);
     
     HBM_CATTRIP    : out std_logic
     );
@@ -90,10 +88,10 @@ architecture rtl of aurora_user_interface_top is
   signal reset_fc          : std_logic;
   signal pma_init          : std_logic;
   signal reset_pb          : std_logic;  
-  signal init_clk_i        : std_logic;
   signal init_clk_in       : std_logic;
   signal reset_i           : std_logic;
   signal reset_h           : std_logic;
+  signal data_err_count    : std_logic_vector(7 downto 0);
 ---------------------------------------------------------------------------------
   -- Aurora core: 
   -------------------------------------------------------------------------------
@@ -176,27 +174,33 @@ architecture rtl of aurora_user_interface_top is
       probe_out0 : out std_logic_vector(0 downto 0)
       );
   end component;
+  
+component clk_wiz_0
+port
+ (-- Clock in ports
+  -- Clock out ports
+  clk_out1          : out    std_logic;
+  -- Status and control signals
+  resetn            : in     std_logic;
+  clk_in1_p         : in     std_logic;
+  clk_in1_n         : in     std_logic
+ );
+end component;
 begin
 
 HBM_CATTRIP<='0';
 ------------------------------------------------------------------------------
--- IBUFG:Differential Input Buffer. Virtex UltraScale+
-------------------------------------------------------------------------------- 
 
-  IBUFDS_inst : IBUFDS
-    port map (
-      O  => init_clk_i,                 -- 1-bit output: Buffer output
-      I  => INIT_CLK_P,  -- 1-bit input: Diff_p buffer input (connect directly to top-level port)
-      IB => INIT_CLK_N  -- 1-bit input: Diff_n buffer input (connect directly to top-level port)
-      );
-
-  BUFG_inst : BUFG
-    port map (
-      O => init_clk_in,                 -- 1-bit output: Clock output.
-      I => init_clk_i                   -- 1-bit input: Clock input.
-      );
-
-
+ clock_wizard_0 : clk_wiz_0
+   port map ( 
+  -- Clock out ports  
+   clk_out1 => init_clk_in,
+  -- Status and control signals                
+   resetn => RESETN,
+   -- Clock in ports
+   clk_in1_p => GTY_SYSCLKP_I,
+   clk_in1_n => GTY_SYSCLKN_I
+ );
 -------------------------------------------------------------------------------
 -- Frame_Gen instantiation
 -------------------------------------------------------------------------------
@@ -220,7 +224,7 @@ HBM_CATTRIP<='0';
       RESET             => reset_fc,
       AXIS_UI_RX_TDATA  => axis_ui_rx_tdata,
       AXIS_UI_RX_TVALID => axis_ui_rx_tvalid,
-      DATA_ERR_COUNT    => DATA_ERR_COUNT);
+      DATA_ERR_COUNT    => data_err_count);
 
 -------------------------------------------------------------------------------
 -- Reset block instantiation
