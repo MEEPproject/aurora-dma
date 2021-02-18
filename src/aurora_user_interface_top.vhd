@@ -122,6 +122,7 @@ architecture rtl of aurora_user_interface_top is
   signal gt_reset_out                : std_logic;
   signal gt_refclk1_out              : std_logic;
   signal gt_powergood                : std_logic_vector(0 downto 0);
+ ------------------------------------------------------------------------------
   component aurora_64b66b_0
     port (
       rxp                         : in  std_logic_vector(0 downto 0);
@@ -167,14 +168,14 @@ architecture rtl of aurora_user_interface_top is
       gt_powergood                : out std_logic_vector(0 downto 0)
       );
   end component;
-
+-------------------------------------------------------------------------------
   component vio_0
     port (
       clk        : in  std_logic;
       probe_out0 : out std_logic_vector(0 downto 0)
       );
   end component;
-  
+ ------------------------------------------------------------------------------
 component clk_wiz_0
 port
  (-- Clock in ports
@@ -185,6 +186,25 @@ port
   clk_in1_p         : in     std_logic;
   clk_in1_n         : in     std_logic
  );
+end component;
+-------------------------------------------------------------------------------
+component ila_0
+
+  port (
+    clk     : in std_logic;
+    probe0  : in std_logic_vector(0 downto 0);
+    probe1  : in std_logic_vector(0 downto 0);
+    probe2  : in std_logic_vector(0 downto 0);
+    probe3  : in std_logic_vector(0 downto 0);
+    probe4  : in std_logic_vector(0 downto 0);
+    probe5  : in std_logic_vector(0 downto 0);
+    probe6  : in std_logic_vector(0 downto 0);
+    probe7  : in std_logic_vector(63 downto 0);
+    probe8  : in std_logic_vector(0 downto 0);
+    probe9  : in std_logic_vector(0 downto 0);
+    probe10 : in std_logic_vector(63 downto 0);
+    probe11 : in std_logic_vector(0 downto 0)
+    );
 end component;
 begin
 
@@ -314,5 +334,24 @@ HBM_CATTRIP<='0';
       clk           => init_clk_in,
       probe_out0(0) => reset_h
       );
-
+-------------------------------------------------------------------------------
+-- ILA
+-------------------------------------------------------------------------------
+      
+ila_1 : ila_0
+  port map (
+    clk        => init_clk_in,
+    probe0(0)  => user_clk_out,
+    probe1(0)  => link_reset_out,
+    probe2(0)  => gt_pll_lock,
+    probe3(0)  => reset_pb,
+    probe4(0)  => pma_init,
+    probe5(0)  => channel_up_out,
+    probe6     => lane_up_out,
+    probe7     => axis_ui_tx_tdata,
+    probe8(0)  => axis_ui_tx_tvalid,
+    probe9(0)  => axis_ui_tx_tready,
+    probe10    => axis_ui_rx_tdata,
+    probe11(0) => axis_ui_rx_tvalid
+);
 end architecture rtl;
