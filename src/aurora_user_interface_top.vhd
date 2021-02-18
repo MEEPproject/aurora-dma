@@ -188,24 +188,19 @@ port
  );
 end component;
 -------------------------------------------------------------------------------
-component ila_0
-
-  port (
-    clk     : in std_logic;
-    probe0  : in std_logic_vector(0 downto 0);
-    probe1  : in std_logic_vector(0 downto 0);
-    probe2  : in std_logic_vector(0 downto 0);
-    probe3  : in std_logic_vector(0 downto 0);
-    probe4  : in std_logic_vector(0 downto 0);
-    probe5  : in std_logic_vector(0 downto 0);
-    probe6  : in std_logic_vector(0 downto 0);
-    probe7  : in std_logic_vector(63 downto 0);
-    probe8  : in std_logic_vector(0 downto 0);
-    probe9  : in std_logic_vector(0 downto 0);
-    probe10 : in std_logic_vector(63 downto 0);
-    probe11 : in std_logic_vector(0 downto 0)
-    );
-end component;
+COMPONENT ila_0
+PORT (
+	clk : IN STD_LOGIC;
+	probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+	probe1 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+	probe2 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
+	probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+	probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+	probe5 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
+	probe6 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
+);
+END COMPONENT  ;
 begin
 
 HBM_CATTRIP<='0';
@@ -338,20 +333,16 @@ HBM_CATTRIP<='0';
 -- ILA
 -------------------------------------------------------------------------------
       
-ila_1 : ila_0
-  port map (
-    clk        => init_clk_in,
-    probe0(0)  => user_clk_out,
-    probe1(0)  => link_reset_out,
-    probe2(0)  => gt_pll_lock,
-    probe3(0)  => reset_pb,
-    probe4(0)  => pma_init,
-    probe5(0)  => channel_up_out,
-    probe6     => lane_up_out,
-    probe7     => axis_ui_tx_tdata,
-    probe8(0)  => axis_ui_tx_tvalid,
-    probe9(0)  => axis_ui_tx_tready,
-    probe10    => axis_ui_rx_tdata,
-    probe11(0) => axis_ui_rx_tvalid
+ila_1: ila_0
+PORT MAP (
+	clk => user_clk_out,
+	probe0(0) => channel_up_out, 
+	probe1 => lane_up_out, 
+	probe2 => axis_ui_tx_tdata, 
+	probe3(0) => axis_ui_tx_tvalid, 
+	probe4(0) => axis_ui_tx_tready, 
+	probe5 => axis_ui_rx_tdata, 
+	probe6(0) => axis_ui_rx_tvalid,
+	probe7 => data_err_count
 );
 end architecture rtl;

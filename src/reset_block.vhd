@@ -14,8 +14,8 @@
 ---- Constants: We need to define the minimum time to assert reset_pb with pma_init, for a normal sequence
 --pma_init:________________--1s--__________________
 --reset_pb:___----- 128clk-+-1s+--128clk---__________
---We are using a reference clock: 161.132812MHz. We want to achive 128·user_CLK=812.2ns.
--- With our reference clock period que have to wait: 132·init_clk=819.19ns
+--We are using a reference clock: 161.132812MHz. We want to achive 128ï¿½user_CLK=812.2ns.
+-- With our reference clock period que have to wait: 132ï¿½init_clk=819.19ns
 --Signals:
 --   INIT_CLK: This signal is used to register and debounce the pma_init signal.
 --   RESET: This signal is the push-button.
@@ -67,9 +67,9 @@ architecture rtl of reset_block is
 
 --------------------------------------------------------------------------------
 
-  constant CLK128_MINIMUM : natural := 13;--132;
-  constant ONE_SECOND     : natural := 161;--161132812;
-  constant TOTAL_COUNTER  : natural := 187;--161133076;
+  constant CLK128_MINIMUM : natural := 132;
+  constant ONE_SECOND     : natural := 161132812;
+  constant TOTAL_COUNTER  : natural := 161133076;
 
 --------------------------------------------------------------------------------
 -- signal: We need an internal counter signal
