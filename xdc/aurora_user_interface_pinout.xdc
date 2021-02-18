@@ -1,17 +1,17 @@
 
- # Reference clock contraint for GTX
-create_clock  -name gt_refclk1_in -period 6.400	 [get_ports GT_REFCLK1_P]
+# Reference clock contraint for GTX
+create_clock -period 6.400 -name gt_refclk1_in [get_ports GT_REFCLK1_P]
 set_clock_groups -asynchronous -group [get_clocks gt_refclk1_in -include_generated_clocks]
-  
-set_property PACKAGE_PIN T43            [get_ports GT_REFCLK1_N]                 ;# Bank 134 - MGTREFCLK0N_134
-set_property PACKAGE_PIN T42            [get_ports GT_REFCLK1_P]                 ;# Bank 134 - MGTREFCLK0P_134
+
+set_property PACKAGE_PIN T43 [get_ports GT_REFCLK1_N]
+set_property PACKAGE_PIN T42 [get_ports GT_REFCLK1_P]
 
 # System clock pin
 
-set_property PACKAGE_PIN BJ43            [get_ports GTY_SYSCLKP_I]                 ;# Bank 65 VCCO
-set_property IOSTANDARD LVDS             [get_ports GTY_SYSCLKP_I]                 ;# Bank 65 VCCO
-set_property PACKAGE_PIN BJ44            [get_ports GTY_SYSCLKN_I]                 ;# Bank 65 VCCO
-set_property IOSTANDARD LVDS             [get_ports GTY_SYSCLKN_I]                 ;# Bank 65 VCCO
+set_property IOSTANDARD LVDS [get_ports GTY_SYSCLKP_I]
+set_property PACKAGE_PIN BJ43 [get_ports GTY_SYSCLKP_I]
+set_property PACKAGE_PIN BJ44 [get_ports GTY_SYSCLKN_I]
+set_property IOSTANDARD LVDS [get_ports GTY_SYSCLKN_I]
 
 
 
@@ -29,5 +29,6 @@ set_property BITSTREAM.CONFIG.UNUSEDPIN Pullup [current_design]
 set_property BITSTREAM.CONFIG.SPI_32BIT_ADDR Yes [current_design]
 # ------------------------------------------------------------------------
 
-set_property PACKAGE_PIN D32              [get_ports HBM_CATTRIP]                        ;# Bank  75 VCCO - VCC1V8   - IO_L17P_T2U_N8_AD10P_75
-set_property IOSTANDARD  LVCMOS18         [get_ports HBM_CATTRIP]                        ;# Bank  75 VCCO - VCC1V8   - IO_L17P_T2U_N8_AD10P_75
+set_property PACKAGE_PIN D32 [get_ports HBM_CATTRIP]
+set_property IOSTANDARD LVCMOS18 [get_ports HBM_CATTRIP]
+

@@ -31,6 +31,8 @@ use ieee.numeric_std.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
+
+
 entity aurora_user_interface_top is
   generic (
     EXAMPLE_SIMULATION : integer := 0);
@@ -123,6 +125,8 @@ architecture rtl of aurora_user_interface_top is
   signal gt_refclk1_out              : std_logic;
   signal gt_powergood                : std_logic_vector(0 downto 0);
  ------------------------------------------------------------------------------
+
+
   component aurora_64b66b_0
     port (
       rxp                         : in  std_logic_vector(0 downto 0);
@@ -188,19 +192,41 @@ port
  );
 end component;
 -------------------------------------------------------------------------------
-COMPONENT ila_0
-PORT (
-	clk : IN STD_LOGIC;
-	probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
-	probe1 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
-	probe2 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
-	probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
-	probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
-	probe5 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
-	probe6 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
-);
-END COMPONENT  ;
+ --Add mark_debug attributes to show debug nets in the synthesized netlist
+attribute keep        : string;
+attribute mark_debug  : string;
+
+attribute keep of channel_up_out     : signal is "true";
+attribute keep of lane_up_out        : signal is "true";
+attribute keep of axis_ui_tx_tdata   : signal is "true";
+attribute keep of axis_ui_tx_tvalid  : signal is "true";
+attribute keep of axis_ui_tx_tready  : signal is "true";
+attribute keep of axis_ui_rx_tdata   : signal is "true";
+attribute keep of axis_ui_rx_tvalid  : signal is "true";
+attribute keep of data_err_count     : signal is "true";
+
+attribute mark_debug of channel_up_out     : signal is "true";
+attribute mark_debug of lane_up_out        : signal is "true";
+attribute mark_debug of axis_ui_tx_tdata   : signal is "true";
+attribute mark_debug of axis_ui_tx_tvalid  : signal is "true";
+attribute mark_debug of axis_ui_tx_tready  : signal is "true";
+attribute mark_debug of axis_ui_rx_tdata   : signal is "true";
+attribute mark_debug of axis_ui_rx_tvalid  : signal is "true";
+attribute mark_debug of data_err_count     : signal is "true";
+
+--COMPONENT ila_0
+--PORT (
+--	clk : IN STD_LOGIC;
+--	probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+--	probe1 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+--	probe2 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
+--	probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+--	probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
+--	probe5 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
+--	probe6 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+--	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
+--);
+--END COMPONENT  ;
 begin
 
 HBM_CATTRIP<='0';
@@ -333,16 +359,16 @@ HBM_CATTRIP<='0';
 -- ILA
 -------------------------------------------------------------------------------
       
-ila_1: ila_0
-PORT MAP (
-	clk => user_clk_out,
-	probe0(0) => channel_up_out, 
-	probe1 => lane_up_out, 
-	probe2 => axis_ui_tx_tdata, 
-	probe3(0) => axis_ui_tx_tvalid, 
-	probe4(0) => axis_ui_tx_tready, 
-	probe5 => axis_ui_rx_tdata, 
-	probe6(0) => axis_ui_rx_tvalid,
-	probe7 => data_err_count
-);
+--ila_1: ila_0
+--PORT MAP (
+--	clk => user_clk_out,
+--	probe0(0) => channel_up_out, 
+--	probe1 => lane_up_out, 
+--	probe2 => axis_ui_tx_tdata, 
+--	probe3(0) => axis_ui_tx_tvalid, 
+--	probe4(0) => axis_ui_tx_tready, 
+--	probe5 => axis_ui_rx_tdata, 
+--	probe6(0) => axis_ui_rx_tvalid,
+--	probe7 => data_err_count
+--);
 end architecture rtl;
