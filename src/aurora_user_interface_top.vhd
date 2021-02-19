@@ -214,19 +214,7 @@ attribute mark_debug of axis_ui_rx_tdata   : signal is "true";
 attribute mark_debug of axis_ui_rx_tvalid  : signal is "true";
 attribute mark_debug of data_err_count     : signal is "true";
 
---COMPONENT ila_0
---PORT (
---	clk : IN STD_LOGIC;
---	probe0 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
---	probe1 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
---	probe2 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
---	probe3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
---	probe4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0); 
---	probe5 : IN STD_LOGIC_VECTOR(63 DOWNTO 0); 
---	probe6 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
---	probe7 : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
---);
---END COMPONENT  ;
+
 begin
 
 HBM_CATTRIP<='0';
@@ -355,20 +343,5 @@ HBM_CATTRIP<='0';
       clk           => init_clk_in,
       probe_out0(0) => reset_h
       );
--------------------------------------------------------------------------------
--- ILA
--------------------------------------------------------------------------------
-      
---ila_1: ila_0
---PORT MAP (
---	clk => user_clk_out,
---	probe0(0) => channel_up_out, 
---	probe1 => lane_up_out, 
---	probe2 => axis_ui_tx_tdata, 
---	probe3(0) => axis_ui_tx_tvalid, 
---	probe4(0) => axis_ui_tx_tready, 
---	probe5 => axis_ui_rx_tdata, 
---	probe6(0) => axis_ui_rx_tvalid,
---	probe7 => data_err_count
---);
+
 end architecture rtl;
