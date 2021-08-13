@@ -1,36 +1,39 @@
-// Title      : Aurora DMA IP implementation
-// Project    : MEEP
-// License    : <License type>
-/*****************************************************************************/
-// File        : aurora_dma_ip_top.vhd
-// Author      : Francelly K. Cano Ladino; francelly.canoladino@bsc.es
-// Company     : Barcelona Supercomputing Center (BSC)
-// Created     : 12/08/2021 - 13:57:35
-// Last update : 12/08/2021 - 13:57:35
-/*****************************************************************************/
-// Description: The Aurora DMA IP will perform an IP using all the necessaries extras IPs as: 
-//              - Aurora 64B/66B IP core
-//				- AXI DMA
-//              - AXI4-Stream Subset converter   
-//              - Reset_block
-// Comments    : <Extra comments if they were needed>
-/*****************************************************************************/
-// Copyright (c) 2021 BSC
-/*****************************************************************************/
-// Revisions  :
-// Date/Time                Version               Engineer
-// dd/mm/yyyy - hh:mm        1.0             <contact email>
-// Comments   : <Highlight the modifications>
-/*****************************************************************************/
+-- Title      : Aurora DMA IP implementation
+-- Project    : MEEP
+-- License    : <License type>
+------------------------------------------------------------------------------------------
+-- File        : aurora_dma_ip_top.vhd
+-- Author      : Francelly K. Cano Ladino; francelly.canoladino@bsc.es
+-- Company     : Barcelona Supercomputing Center (BSC)
+-- Created     : 12/08/2021 - 13:57:35
+-- Last update : 12/08/2021 - 13:57:35
+----------------------------------------------------------------------------------------------------
+-- Description: The Aurora DMA IP will perform an IP using all the necessaries extras IPs as: 
+--              - Aurora 64B/66B IP core
+--				- AXI DMA
+--              - AXI4-Stream Subset converter   
+--              - Reset_block
+-- Comments    : <Extra comments if they were needed>
+--------------------------------------------------------------------------------------------------
+-- Copyright (c) 2021 BSC
+---------------------------------------------------------------------------------------------------
+-- Revisions  :
+-- Date/Time                Version               Engineer
+-- dd/mm/yyyy - hh:mm        1.0             <contact email>
+-- Comments   : <Highlight the modifications>
+---------------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_vector.all; 
 use ieee.std_logic_unsigned.all;
 library UNISIM;
 use UNISIM.vcomponents.all;
 
+
 entity aurora_dma_ip_top is
+  generic(
+  INITCLOCK_FREQ_MHZ    : integer :=200
+  );
   port (
     
     ---------------------------------------
@@ -39,8 +42,7 @@ entity aurora_dma_ip_top is
     AXI_DMA_RESETN      : in  std_logic;
     S_AXI_LITE_DMA_ACLK : in  std_logic;
     
-    --S_AXI_LITE
-    S_AXI_LITE_DMA_ACLK : in  std_logic;
+    --S_AXI_LITE    
     S_AXI_LITE_ARADDR   : in  std_logic_vector (9 downto 0);
     S_AXI_LITE_ARREADY  : out std_logic;
     S_AXI_LITE_ARVALID  : in  std_logic;
@@ -154,9 +156,16 @@ architecture rtl of aurora_dma_ip_top is
   signal aurora_dma_m_tdata  : std_logic_vector(255 downto 0);
   signal aurora_dma_m_tkeep  : std_logic_vector(31 downto 0);
   signal aurora_dma_m_tlast  : std_logic;
+  signal aurora_dma_m_tready : std_logic;
+  
+-- AXI DMA
+
+  signal axi_dma_tstvec              :std_logic_vector(31 downto 0);
 
 -- Aurora core:
-  signal user_clk_out                : std_logic;
+  signal user_clock_out              : std_logic;
+  signal pma_init                    : std_logic;
+  signal reset_pb                    : std_logic;
   signal power_down                  : std_logic;
   signal lane_up_out                 : std_logic_vector(0 to 3);
   signal loopback                    : std_logic_vector(2 downto 0);
@@ -213,7 +222,11 @@ architecture rtl of aurora_dma_ip_top is
   signal bus_struct_reset     : std_logic_vector(0 downto 0);
   signal peripheral_reset     : std_logic_vector(0 downto 0);
   signal interconnect_aresetn : std_logic_vector(0 downto 0);
+  signal peripheral_aresetn_aux : std_logic_vector(0 downto 0);
 
+-- REset block
+  signal reset_ui_aux         : std_logic;
+  
 --Aurora component
 COMPONENT aurora_64b66b_0
   PORT (
@@ -401,18 +414,18 @@ END COMPONENT;
 begin
 -- Reset Block
 
-reset_ui_aux<=RESET_UI;
+RESET_UI  <= reset_ui_aux;
 reset_0 : entity work.reset_block
 generic map (
   INITCLOCK_FREQ_MHZ => INITCLOCK_FREQ_MHZ)
 port map (
   INIT_CLK   => INIT_CLK,
   RESET      => RESET,
-  CHANNEL_UP => CHANNEL_UP,
-  SYS_RESET  => SYS_RESET,
-  PMA_INIT   => PMA_INIT,
-  RESET_PB   => RESET_PB,
-  RESET_UI   => RESET_UI);
+  CHANNEL_UP => channel_up_out,
+  SYS_RESET  => sys_reset_out,
+  PMA_INIT   => pma_init,
+  RESET_PB   => reset_pb,
+  RESET_UI   => reset_ui_aux);
 
 
 
@@ -421,8 +434,8 @@ port map (
 axi_dma : axi_dma_0
   port map (
     s_axi_lite_aclk        => S_AXI_LITE_DMA_ACLK,
-    m_axi_mm2s_aclk        => USER_CLK_OUT,
-    m_axi_s2mm_aclk        => USER_CLK_OUT,
+    m_axi_mm2s_aclk        => user_clock_out,
+    m_axi_s2mm_aclk        => user_clock_out,
     axi_resetn             => AXI_DMA_RESETN,
     s_axi_lite_awvalid     => S_AXI_LITE_AWVALID,
     s_axi_lite_awready     => S_AXI_LITE_AWREADY,
@@ -477,7 +490,7 @@ axi_dma : axi_dma_0
     m_axi_s2mm_bready      => M_AXI_S2MM_BREADY,
     s2mm_prmry_reset_out_n => S2MM_PRMRY_RESETN_OUT,
     s_axis_s2mm_tdata      => aurora_dma_m_tdata,
-    s_axis_s2mm_tkeep      => aurora_dma_m_tdata,
+    s_axis_s2mm_tkeep      => aurora_dma_m_tkeep,
     s_axis_s2mm_tvalid     => aurora_dma_m_tvalid,
     s_axis_s2mm_tready     => aurora_dma_m_tready,
     s_axis_s2mm_tlast      => aurora_dma_m_tlast,
@@ -511,7 +524,9 @@ gt1_drpwe         <= '0';
 gt2_drpwe         <= '0';
 gt3_drpwe         <= '0';
 ----------------------------
-
+CHANNEL_UP <= channel_up_out;
+LANE_UP    <= lane_up_out;
+USER_CLK_OUT <=user_clock_out;
 
 aurora_core : aurora_64b66b_0
   port map (
@@ -525,8 +540,8 @@ aurora_core : aurora_64b66b_0
     txn                         => TXN,
     hard_err                    => hard_err,
     soft_err                    => soft_err,
-    channel_up                  => CHANNEL_UP,
-    lane_up                     => LANE_UP,
+    channel_up                  => channel_up_out,
+    lane_up                     => lane_up_out,
     tx_out_clk                  => tx_out_clk,
     gt_pll_lock                 => gt_pll_lock,
     s_axi_tx_tdata              => dma_aurora_m_tdata,
@@ -563,14 +578,14 @@ aurora_core : aurora_64b66b_0
     link_reset_out              => link_reset_out,
     gt_refclk1_p                => GT_REFCLK1_P,
     gt_refclk1_n                => GT_REFCLK1_N,
-    user_clk_out                => USER_CLK_OUT,
+    user_clk_out                => user_clock_out,
     sync_clk_out                => sync_clk_out,
     gt_qpllclk_quad1_out        => gt_qpllclk_quad1_out,
     gt_qpllrefclk_quad1_out     => gt_qpllrefclk_quad1_out,
     gt_qpllrefclklost_quad1_out => gt_qpllrefclklost_quad1_out,
     gt_qplllock_quad1_out       => gt_qplllock_quad1_out,
     gt_rxcdrovrden_in           => gt_rxcdrovrden_in,
-    sys_reset_out               => SYS_RESET_OUT,
+    sys_reset_out               => sys_reset_out,
     gt_reset_out                => gt_reset_out,
     gt_refclk1_out              => gt_refclk1_out,
     gt_powergood                => gt_powergood
@@ -578,8 +593,8 @@ aurora_core : aurora_64b66b_0
 
 aurora_dma : axis_subset_converter_0
   port map (
-    aclk          => aclk,
-    aresetn       => aresetn,
+    aclk          => user_clock_out,
+    aresetn       => peripheral_aresetn_aux(0),
     s_axis_tvalid => aurora_dma_s_tvalid,
     s_axis_tdata  => aurora_dma_s_tdata,
     m_axis_tvalid => aurora_dma_m_tvalid,
@@ -591,23 +606,24 @@ aurora_dma : axis_subset_converter_0
 
 dma_aurora : axis_subset_converter_1
   port map (
-    aclk                 => aclk,
-    aresetn              => aresetn,
+    aclk                 => user_clock_out,
+    aresetn              => peripheral_aresetn_aux(0),
     s_axis_tvalid        => dma_aurora_s_tvalid,
     s_axis_tready        => dma_aurora_s_tready,
     s_axis_tdata         => dma_aurora_s_tdata,
     s_axis_tkeep         => dma_aurora_s_tkeep,
     s_axis_tlast         => dma_aurora_s_tlast,
-    m_axis_tvalid        => dma_aurora_s_tvalid,
+    m_axis_tvalid        => dma_aurora_m_tvalid,
     m_axis_tready        => dma_aurora_m_tready,
     m_axis_tdata         => dma_aurora_m_tdata,
     sparse_tkeep_removed => sparse_tkeep_removed
     );
 
 ext_reset_in <= not reset_ui_aux;
+PERIPHERAL_ARESETN       <= peripheral_aresetn_aux;
 proc_system_reset : proc_sys_reset_0
   port map (
-    slowest_sync_clk     => USER_CLK_OUT,
+    slowest_sync_clk     => user_clock_out,
     ext_reset_in         => ext_reset_in,
     aux_reset_in         => aux_reset_in,
     mb_debug_sys_rst     => mb_debug_sys_rst,
@@ -616,7 +632,7 @@ proc_system_reset : proc_sys_reset_0
     bus_struct_reset     => bus_struct_reset,
     peripheral_reset     => peripheral_reset,
     interconnect_aresetn => interconnect_aresetn,
-    peripheral_aresetn   => peripheral_aresetn
+    peripheral_aresetn   => peripheral_aresetn_aux
     );
 
   end architecture rtl;
