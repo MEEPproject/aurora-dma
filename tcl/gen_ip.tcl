@@ -80,22 +80,22 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 #set aresetn_polarity [ipx::add_bus_parameter POLARITY $aresetn_intf]
 #set_property value ACTIVE_LOW ${aresetn_polarity}
 
-ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET -of_objects [ipx::current_core]]
-ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET_UI -of_objects [ipx::current_core]]
-ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces SYS_RESET_OUT -of_objects [ipx::current_core]]
-ipx:: add_port_map RST [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-set_property physical_name MM2S_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
-ipx:: add_port_map RST [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-set_property physical_name S2MM_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
+#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET -of_objects [ipx::current_core]]
+#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET_UI -of_objects [ipx::current_core]]
+#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces SYS_RESET_OUT -of_objects [ipx::current_core]]
+#ipx:: add_port_map RST [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
+#set_property physical_name MM2S_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
+#ipx:: add_port_map RST [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
+#set_property physical_name S2MM_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
 
-ipx:: infer_bus_interfaces MM2S_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
-ipx:: infer_bus_interfaces S2MM_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
-ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
+#ipx:: infer_bus_interfaces MM2S_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
+#ipx:: infer_bus_interfaces S2MM_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
+#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
+#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
 
 
-ipx::add_segment AXI_DMA_DATA_MM2S [ipx::get_address_spaces M_AXI_MM2S -of_objects [ipx::current_core]]
-ipx::add_segment AXI_DMA_DATA_S2MM [ipx::get_address_spaces M_AXI_S2MM -of_objects [ipx::current_core]]
+#ipx::add_segment AXI_DMA_DATA_MM2S [ipx::get_address_spaces M_AXI_MM2S -of_objects [ipx::current_core]]
+#ipx::add_segment AXI_DMA_DATA_S2MM [ipx::get_address_spaces M_AXI_S2MM -of_objects [ipx::current_core]]
 
 
 
