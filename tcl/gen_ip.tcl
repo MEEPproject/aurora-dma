@@ -66,9 +66,9 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 
 
 # SET SYS_RESET
-set sys_reset_intf [ipx::get_bus_interfaces SYS_RESET -of_objects [ipx::current_core]]
-set sys_reset_polarity [ipx::add_bus_parameter POLARITY $sys_reset_intf]
-set_property value ACTIVE_HIGH ${sys_reset_polarity}
+#set sys_reset_intf [ipx::get_bus_interfaces SYS_RESET -of_objects [ipx::current_core]]
+#set sys_reset_polarity [ipx::add_bus_parameter POLARITY $sys_reset_intf]
+#set_property value ACTIVE_HIGH ${sys_reset_polarity}
 
 
 
