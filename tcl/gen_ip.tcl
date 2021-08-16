@@ -56,12 +56,12 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 #set property value M_AXI_S2MM $user_clk_out_assoc_intf
 #ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces USER_CLK_OUT -of_objects [ipx::current_core]]
 
-set s_axi_lite_dma_aclk_intf [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
-set s_axi_lite_dma_aclk_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $s_axi_lite_dma_aclk_intf]
-set property value S_AXI_LITE $s_axi_lite_dma_assoc_intf
-ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
+#set s_axi_lite_dma_aclk_intf [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
+#set s_axi_lite_dma_aclk_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $s_axi_lite_dma_aclk_intf]
+#set property value S_AXI_LITE $s_axi_lite_dma_assoc_intf
+#ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
 
-ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces INIT_CLK -of_objects [ipx::current_core]]
+#ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces INIT_CLK -of_objects [ipx::current_core]]
 
 
 
