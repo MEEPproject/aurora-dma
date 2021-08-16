@@ -32,10 +32,10 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 # ipx::add_bus_parameter RUSER_WIDTH [ipx::get_bus_interfaces S_AXI -of_objects [ipx::current_core]] 
 
 ## Set the created interface ports
-set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_MM2S]
-set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_MM2S]
-set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_S2MM]
-set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_S2MM]
+#set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_MM2S]
+#set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_MM2S]
+#set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_S2MM]
+#set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_S2MM]
 
 
 
