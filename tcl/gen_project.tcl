@@ -54,8 +54,8 @@ save_bd_design
 ####################################################
 # MAIN FLOW
 ####################################################
-set g_top_name aurora_dma_ip
-${g_project_name}_top
+set g_top_name aurora_dma_ip_top
+#${g_project_name}_top
 
 set top_module "$root_dir/src/${g_top_name}.vhd"
 set src_files [glob ${root_dir}/src/*]
