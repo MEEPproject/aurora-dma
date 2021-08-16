@@ -157,6 +157,7 @@ architecture rtl of aurora_dma_ip_top is
   signal aurora_dma_m_tkeep  : std_logic_vector(31 downto 0);
   signal aurora_dma_m_tlast  : std_logic;
   signal aurora_dma_m_tready : std_logic;
+  signal transfer_dropped    : std_logic;
   
 -- AXI DMA
 
@@ -213,15 +214,15 @@ architecture rtl of aurora_dma_ip_top is
 
 
 -- proc system reset
-  signal slowest_sync_clk     : std_logic;
-  signal ext_reset_in         : std_logic;
-  signal aux_reset_in         : std_logic;
-  signal mb_debug_sys_rst     : std_logic;
-  signal dcm_locked           : std_logic;
-  signal mb_reset             : std_logic;
-  signal bus_struct_reset     : std_logic_vector(0 downto 0);
-  signal peripheral_reset     : std_logic_vector(0 downto 0);
-  signal interconnect_aresetn : std_logic_vector(0 downto 0);
+  signal slowest_sync_clk       : std_logic;
+  signal ext_reset_in           : std_logic;
+  signal aux_reset_in           : std_logic;
+  signal mb_debug_sys_rst       : std_logic;
+  signal dcm_locked             : std_logic;
+  signal mb_reset               : std_logic;
+  signal bus_struct_reset       : std_logic_vector(0 downto 0);
+  signal peripheral_reset       : std_logic_vector(0 downto 0);
+  signal interconnect_aresetn   : std_logic_vector(0 downto 0);
   signal peripheral_aresetn_aux : std_logic_vector(0 downto 0);
 
 -- REset block
@@ -366,14 +367,16 @@ END COMPONENT;
 -- Aurora-to-DMA
 COMPONENT axis_subset_converter_0
   PORT (
-    aclk          : in  std_logic;
-    aresetn       : in  std_logic;
-    s_axis_tvalid : in  std_logic;
-    s_axis_tdata  : in  std_logic_vector(255 downto 0);
-    m_axis_tvalid : out std_logic;
-    m_axis_tdata  : out std_logic_vector(255 downto 0);
-    m_axis_tkeep  : out std_logic_vector(31 downto 0);
-    m_axis_tlast  : out std_logic
+    aclk : IN STD_LOGIC;
+    aresetn : IN STD_LOGIC;
+    s_axis_tvalid : IN STD_LOGIC;
+    s_axis_tdata : IN STD_LOGIC_VECTOR(255 DOWNTO 0);
+    m_axis_tvalid : OUT STD_LOGIC;
+    m_axis_tready : IN STD_LOGIC;
+    m_axis_tdata : OUT STD_LOGIC_VECTOR(255 DOWNTO 0);
+    m_axis_tkeep : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    m_axis_tlast : OUT STD_LOGIC;
+    transfer_dropped : OUT STD_LOGIC
   );
 END COMPONENT;
 
@@ -591,17 +594,21 @@ aurora_core : aurora_64b66b_0
     gt_powergood                => gt_powergood
     );
 
+
 aurora_dma : axis_subset_converter_0
-  port map (
-    aclk          => user_clock_out,
-    aresetn       => peripheral_aresetn_aux(0),
+  PORT MAP (
+    aclk => user_clock_out,
+    aresetn => peripheral_aresetn_aux(0),
     s_axis_tvalid => aurora_dma_s_tvalid,
-    s_axis_tdata  => aurora_dma_s_tdata,
+    s_axis_tdata => aurora_dma_s_tdata,
     m_axis_tvalid => aurora_dma_m_tvalid,
-    m_axis_tdata  => aurora_dma_m_tdata,
-    m_axis_tkeep  => aurora_dma_m_tkeep,
-    m_axis_tlast  => aurora_dma_m_tlast
-    );
+    m_axis_tready => aurora_dma_m_tready,
+    m_axis_tdata => aurora_dma_m_tdata,
+    m_axis_tkeep => aurora_dma_m_tkeep,
+    m_axis_tlast => aurora_dma_m_tlast,
+    transfer_dropped => transfer_dropped
+  );
+
   
 
 dma_aurora : axis_subset_converter_1
@@ -621,6 +628,9 @@ dma_aurora : axis_subset_converter_1
 
 ext_reset_in <= not reset_ui_aux;
 PERIPHERAL_ARESETN       <= peripheral_aresetn_aux;
+aux_reset_in <= '1';
+mb_debug_sys_rst <= '1';
+dcm_locked <= '1';
 proc_system_reset : proc_sys_reset_0
   port map (
     slowest_sync_clk     => user_clock_out,
