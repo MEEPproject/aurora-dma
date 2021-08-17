@@ -31,11 +31,6 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 # ipx::add_bus_parameter BUSER_WIDTH [ipx::get_bus_interfaces S_AXI -of_objects [ipx::current_core]] 
 # ipx::add_bus_parameter RUSER_WIDTH [ipx::get_bus_interfaces S_AXI -of_objects [ipx::current_core]] 
 
-## Set the created interface ports
-#set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_MM2S]
-#set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_MM2S]
-#set_property CONFIG.DATA_WIDTH 256 [get_bd_intf_ports /M_AXI_S2MM]
-#set_property CONFIG.FREQ_HZ 402832032 [get_bd_intf_ports /M_AXI_S2MM]
 
 
 
@@ -50,30 +45,28 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 
 
 #Set clocks
-#set user_clk_out_intf [ipx::get_bus_interfaces USER_CLK_OUT -of_objects ${ip_core}]
-#set user_clk_out_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $user_clk_out_intf]
-#set property value M_AXI_MM2S $user_clk_out_assoc_intf
-#set property value M_AXI_S2MM $user_clk_out_assoc_intf
-#ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces USER_CLK_OUT -of_objects [ipx::current_core]]
 
-#set s_axi_lite_dma_aclk_intf [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
-#set s_axi_lite_dma_aclk_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $s_axi_lite_dma_aclk_intf]
-#set property value S_AXI_LITE $s_axi_lite_dma_assoc_intf
-#ipx:: add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
-
+#Set Frequency INY_CLK
 ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces INIT_CLK -of_objects [ipx::current_core]]
 
+#Set USER_CLK_OUT
+ipx::infer_bus_interface USER_CLK_OUT xilinx.com:signal:clock_rtl:1.0 [ipx::current_core]
+ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces USER_CLK_OUT -of_objects [ipx::current_core]]
+set user_clk_out_intf [ipx::get_bus_interfaces USER_CLK_OUT -of_objects ${ip_core}]
+set user_clk_out_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $user_clk_out_intf]
+set_property value M_AXI_MM2S:M_AXI_S2MM [ipx::add_bus_parameter ASSOCIATED_BUSIF [ipx::get_bus_interfaces USER_CLK_OUT]]
+
+#Set S_AXI_LITE_DMA_ACLK
+ipx::infer_bus_interface S_AXI_LITE_DMA_ACLK xilinx.com:signal:clock_rtl:1.0 [ipx::current_core]
+ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
+set s_axi_lite_dma_aclk_intf [ipx::get_bus_interfaces S_AXI_LITE_DMA_ACLK -of_objects [ipx::current_core]]
+set s_axi_lite_dma_aclk_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $s_axi_lite_dma_aclk_intf]
+set_property value S_AXI_LITE $s_axi_lite_dma_aclk_assoc_intf
+set s_axi_lite_aclk_assoc_reset [ipx::add_bus_parameter ASSOCIATED_RESET $s_axi_lite_dma_aclk_intf]
+set_property value AXI_DMA_RESETN $s_axi_lite_aclk_assoc_reset
 
 
 # SET SYS_RESET
-#set sys_reset_intf [ipx::get_bus_interfaces SYS_RESET -of_objects [ipx::current_core]]
-#set sys_reset_polarity [ipx::add_bus_parameter POLARITY $sys_reset_intf]
-#set_property value ACTIVE_HIGH ${sys_reset_polarity}
-
-
-
-
-
 
 # Set reset polarity
 #set aresetn_intf [ipx::get_bus_interfaces ARESETN -of_objects ${ip_core}]
@@ -87,24 +80,6 @@ set_property value ACTIVE_HIGH ${reset_polarity}
 set reset_ui_intf [ipx::get_bus_interfaces RESET_UI -of_objects [ipx::current_core]]
 set reset_ui_polarity [ipx::add_bus_parameter POLARITY $reset_ui_intf]
 set_property value ACTIVE_HIGH ${reset_ui_polarity}
-
-#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET -of_objects [ipx::current_core]]
-#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces RESET_UI -of_objects [ipx::current_core]]
-#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces SYS_RESET_OUT -of_objects [ipx::current_core]]
-#ipx:: add_port_map RST [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-#set_property physical_name MM2S_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
-#ipx:: add_port_map RST [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-#set_property physical_name S2MM_PRMRY_RESETN_OUT [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]]
-
-#ipx:: infer_bus_interfaces MM2S_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
-#ipx:: infer_bus_interfaces S2MM_PRMRY_RESETN_OUT xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
-#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces MM2S_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-#ipx::add_bus_parameter POLARITY [ipx::get_bus_interfaces S2MM_PRMRY_RESETN_OUT -of_objects [ipx::current_core]]
-
-
-#ipx::add_segment AXI_DMA_DATA_MM2S [ipx::get_address_spaces M_AXI_MM2S -of_objects [ipx::current_core]]
-#ipx::add_segment AXI_DMA_DATA_S2MM [ipx::get_address_spaces M_AXI_S2MM -of_objects [ipx::current_core]]
-
 
 
 
