@@ -631,7 +631,7 @@ PERIPHERAL_ARESETN       <= peripheral_aresetn_aux;
 aux_reset_in <= '1';
 mb_debug_sys_rst <= '1';
 dcm_locked <= '1';
-proc_system_reset : proc_sys_reset_0
+proc_system_reset_0 : proc_sys_reset_0
   port map (
     slowest_sync_clk     => user_clock_out,
     ext_reset_in         => ext_reset_in,
