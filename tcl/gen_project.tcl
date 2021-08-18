@@ -42,7 +42,19 @@ set design_name $g_project_name
 set ip_dir_list [list \
      $root_dir/ip]
 	
+
 set_property  ip_repo_paths  $ip_dir_list [current_project]
+
+upgrade_ip [get_ips {axi_dma_0}]
+upgrade_ip [get_ips {aurora_64b66b_0}]
+upgrade_ip [get_ips {axis_subset_converter_0}]
+upgrade_ip [get_ips {axis_subset_converter_1}]
+upgrade_ip [get_ips {proc_sys_reset_0}]
+
+
+
+
+
 if { $g_useBlockDesign eq "Y" } {
 create_bd_design -dir $root_dir/bd ${design_name}
 update_ip_catalog -rebuild
