@@ -54,12 +54,6 @@ validate_bd_design
 save_bd_design
 }
 
-upgrade_ip [get_ips {axi_dma_0}]
-upgrade_ip [get_ips {aurora_64b66b_0}]
-upgrade_ip [get_ips {axis_subset_converter_0}]
-upgrade_ip [get_ips {axis_subset_converter_1}]
-upgrade_ip [get_ips {proc_sys_reset_0}]
-
 ####################################################
 # MAIN FLOW
 ####################################################
@@ -71,6 +65,13 @@ set src_files [glob ${root_dir}/src/*]
 set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
 add_files ${src_files}
 add_files -quiet ${ip_files}
+
+upgrade_ip [get_ips {axi_dma_0}]
+upgrade_ip [get_ips {aurora_64b66b_0}]
+upgrade_ip [get_ips {axis_subset_converter_0}]
+upgrade_ip [get_ips {axis_subset_converter_1}]
+upgrade_ip [get_ips {proc_sys_reset_0}]
+
 # Add Constraint files to project
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_timing.xdc"
