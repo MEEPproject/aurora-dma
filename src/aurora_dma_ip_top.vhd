@@ -32,7 +32,16 @@ use UNISIM.vcomponents.all;
 
 entity aurora_dma_ip_top is
   generic(
-  INITCLOCK_FREQ_MHZ    : integer :=200
+  INITCLOCK_FREQ_MHZ               : integer := 200;
+  C_M_AXI_MM2S_DATA_WIDTH          : integer := 256;
+  C_M_AXI_MM2S_ADDR_WIDTH          : integer := 32;
+  C_M_AXI_S2MM_DATA_WIDTH          : integer := 256;
+  C_M_AXI_S2MM_ADDR_WIDTH          : integer := 32;
+  C_M_AXIS_MM2S_TDATA_WIDTH        : integer := 256;
+  C_M_AXIS_S2MM_TDATA_WIDTH        : integer := 256;
+  C_ADDR_WIDTH                     : integer := 32;
+  C_S_AXI_LITE_ADDR_WIDTH          : integer := 10;
+  C_S_AXI_LITE_DATA_WIDTH          : integer := 32
   );
   port (
     
@@ -43,26 +52,26 @@ entity aurora_dma_ip_top is
     S_AXI_LITE_DMA_ACLK : in  std_logic;
     
     --S_AXI_LITE    
-    S_AXI_LITE_ARADDR   : in  std_logic_vector (9 downto 0);
+    S_AXI_LITE_ARADDR   : in  std_logic_vector (C_S_AXI_LITE_ADDR_WIDTH-1 downto 0);
     S_AXI_LITE_ARREADY  : out std_logic;
     S_AXI_LITE_ARVALID  : in  std_logic;
-    S_AXI_LITE_AWADDR   : in  std_logic_vector (9 downto 0);
+    S_AXI_LITE_AWADDR   : in  std_logic_vector (C_S_AXI_LITE_ADDR_WIDTH-1 downto 0);
     S_AXI_LITE_AWREADY  : out std_logic;
     S_AXI_LITE_AWVALID  : in  std_logic;
     S_AXI_LITE_BREADY   : in  std_logic;
     S_AXI_LITE_BRESP    : out std_logic_vector (1 downto 0);
     S_AXI_LITE_BVALID   : out std_logic;
-    S_AXI_LITE_RDATA    : out std_logic_vector (31 downto 0);
+    S_AXI_LITE_RDATA    : out std_logic_vector (C_S_AXI_LITE_DATA_WIDTH-1 downto 0);
     S_AXI_LITE_RREADY   : in  std_logic;
     S_AXI_LITE_RRESP    : out std_logic_vector (1 downto 0);
     S_AXI_LITE_RVALID   : out std_logic;
-    S_AXI_LITE_WDATA    : in  std_logic_vector (31 downto 0);
+    S_AXI_LITE_WDATA    : in  std_logic_vector (C_S_AXI_LITE_DATA_WIDTH-1 downto 0);
     S_AXI_LITE_WREADY   : out std_logic;
     S_AXI_LITE_WVALID   : in  std_logic;
 
     --M_AXI_MM2S
 
-    M_AXI_MM2S_ARADDR  : out std_logic_vector (31 downto 0);
+    M_AXI_MM2S_ARADDR  : out std_logic_vector (C_M_AXI_MM2S_ADDR_WIDTH-1 downto 0);
     M_AXI_MM2S_ARBURST : out std_logic_vector (1 downto 0);
     M_AXI_MM2S_ARCACHE : out std_logic_vector (3 downto 0);
     M_AXI_MM2S_ARLEN   : out std_logic_vector (7 downto 0);
@@ -70,7 +79,7 @@ entity aurora_dma_ip_top is
     M_AXI_MM2S_ARREADY : in  std_logic;
     M_AXI_MM2S_ARSIZE  : out std_logic_vector (2 downto 0);
     M_AXI_MM2S_ARVALID : out std_logic;
-    M_AXI_MM2S_RDATA   : in  std_logic_vector (255 downto 0);
+    M_AXI_MM2S_RDATA   : in  std_logic_vector (C_M_AXI_MM2S_DATA_WIDTH-1 downto 0);
     M_AXI_MM2S_RLAST   : in  std_logic;
     M_AXI_MM2S_RREADY  : out std_logic;
     M_AXI_MM2S_RRESP   : in  std_logic_vector (1 downto 0);
@@ -78,7 +87,7 @@ entity aurora_dma_ip_top is
 
     --M_AXI_S2MM
 
-    M_AXI_S2MM_AWADDR  : out std_logic_vector (31 downto 0);
+    M_AXI_S2MM_AWADDR  : out std_logic_vector (C_M_AXI_S2MM_ADDR_WIDTH-1 downto 0);
     M_AXI_S2MM_AWBURST : out std_logic_vector (1 downto 0);
     M_AXI_S2MM_AWCACHE : out std_logic_vector (3 downto 0);
     M_AXI_S2MM_AWLEN   : out std_logic_vector (7 downto 0);
@@ -89,7 +98,7 @@ entity aurora_dma_ip_top is
     M_AXI_S2MM_BREADY  : out std_logic;
     M_AXI_S2MM_BRESP   : in  std_logic_vector (1 downto 0);
     M_AXI_S2MM_BVALID  : in  std_logic;
-    M_AXI_S2MM_WDATA   : out std_logic_vector (255 downto 0);
+    M_AXI_S2MM_WDATA   : out std_logic_vector (C_M_AXI_S2MM_DATA_WIDTH-1 downto 0);
     M_AXI_S2MM_WLAST   : out std_logic;
     M_AXI_S2MM_WREADY  : in  std_logic;
     M_AXI_S2MM_WSTRB   : out std_logic_vector (31 downto 0);
@@ -100,11 +109,7 @@ entity aurora_dma_ip_top is
     MM2S_PRMRY_RESETN_OUT : out std_logic;
     S2MM_INTROUT          : out std_logic;
     S2MM_PRMRY_RESETN_OUT : out std_logic;
--------------------------------------------------------------------------------
--- Proc System Reset
--------------------------------------------------------------------------------
-    
-    PERIPHERAL_ARESETN : out std_logic_vector(0 downto 0);
+
     --Aurora_64B_66B
 -------------------------------------------------------------------------------
 -- Aurora 64B/66B core
@@ -112,6 +117,18 @@ entity aurora_dma_ip_top is
     --GT_REFCLK
     GT_REFCLK1_N : in std_logic;
     GT_REFCLK1_P : in std_logic;
+    
+    --Signals output debug
+    --dma_to_aurora
+    M0_AXIS_MM2S_TVALID  : out std_logic; 
+    M0_AXIS_MM2S_TREADY  : out std_logic; 
+    M0_AXIS_MM2S_TDATA   : out std_logic_vector(C_M_AXIS_MM2S_TDATA_WIDTH-1 downto 0);
+    M0_AXIS_MM2S_TKEEP   : out std_logic_vector(31 downto 0);
+    M0_AXIS_MM2S_TLAST   : out std_logic;
+    --Aurora_to_dma
+    S0_AXIS_S2MM_TDATA   : out std_logic_vector(C_M_AXIS_S2MM_TDATA_WIDTH-1 downto 0);
+    S0_AXIS_S2MM_TVALID  : out std_logic;
+    
 
     -- Core status
     CHANNEL_UP : out std_logic;
@@ -136,24 +153,25 @@ architecture rtl of aurora_dma_ip_top is
 -------------------------------------------------------------------------------
 -- Signals
 -------------------------------------------------------------------------------
+
 -- Subset converter: DMA-to-Aurora
 
   signal dma_aurora_s_tvalid  : std_logic;
   signal dma_aurora_s_tready  : std_logic;
-  signal dma_aurora_s_tdata   : std_logic_vector(255 downto 0);
+  signal dma_aurora_s_tdata   : std_logic_vector(C_M_AXIS_S2MM_TDATA_WIDTH-1 downto 0);
   signal dma_aurora_s_tkeep   : std_logic_vector(31 downto 0);
   signal dma_aurora_s_tlast   : std_logic;
   signal dma_aurora_m_tvalid  : std_logic;
   signal dma_aurora_m_tready  : std_logic;
-  signal dma_aurora_m_tdata   : std_logic_vector(255 downto 0);
+  signal dma_aurora_m_tdata   : std_logic_vector(C_M_AXIS_MM2S_TDATA_WIDTH-1 downto 0);
   signal sparse_tkeep_removed : std_logic;
 
 --Subset converter: Aurora-to-DMA
 
   signal aurora_dma_s_tvalid : std_logic;
-  signal aurora_dma_s_tdata  : std_logic_vector(255 downto 0);
+  signal aurora_dma_s_tdata  : std_logic_vector(C_M_AXIS_S2MM_TDATA_WIDTH-1 downto 0);
   signal aurora_dma_m_tvalid : std_logic;
-  signal aurora_dma_m_tdata  : std_logic_vector(255 downto 0);
+  signal aurora_dma_m_tdata  : std_logic_vector(C_M_AXIS_MM2S_TDATA_WIDTH-1 downto 0);
   signal aurora_dma_m_tkeep  : std_logic_vector(31 downto 0);
   signal aurora_dma_m_tlast  : std_logic;
   signal aurora_dma_m_tready : std_logic;
@@ -503,6 +521,7 @@ axi_dma : axi_dma_0
     );
 
 -- Aurora 64B/66B
+
 -------------------------------------------------------------------------------
 -- Aurora Core instantiation
 -------------------------------------------------------------------------------
@@ -595,6 +614,12 @@ aurora_core : aurora_64b66b_0
     );
 
 
+
+
+    --Aurora_to_dma
+    S0_AXIS_S2MM_TDATA   <= aurora_dma_s_tdata;
+    S0_AXIS_S2MM_TVALID  <= aurora_dma_s_tvalid;
+
 aurora_dma : axis_subset_converter_0
   PORT MAP (
     aclk => user_clock_out,
@@ -609,7 +634,11 @@ aurora_dma : axis_subset_converter_0
     transfer_dropped => transfer_dropped
   );
 
-  
+    M0_AXIS_MM2S_TVALID <= dma_aurora_s_tvalid;
+    M0_AXIS_MM2S_TREADY <= dma_aurora_s_tready;
+    M0_AXIS_MM2S_TDATA  <= dma_aurora_s_tdata;
+    M0_AXIS_MM2S_TKEEP  <= dma_aurora_s_tkeep;
+    M0_AXIS_MM2S_TLAST  <= dma_aurora_s_tlast;
 
 dma_aurora : axis_subset_converter_1
   port map (
@@ -627,7 +656,7 @@ dma_aurora : axis_subset_converter_1
     );
 
 ext_reset_in <= not reset_ui_aux;
-PERIPHERAL_ARESETN       <= peripheral_aresetn_aux;
+
 aux_reset_in <= '1';
 mb_debug_sys_rst <= '1';
 dcm_locked <= '1';
