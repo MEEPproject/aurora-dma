@@ -44,6 +44,7 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 
 
 
+
 #Set clocks
 
 #Set Frequency INY_CLK
@@ -82,8 +83,44 @@ set reset_ui_polarity [ipx::add_bus_parameter POLARITY $reset_ui_intf]
 set_property value ACTIVE_HIGH ${reset_ui_polarity}
 
 
+# Add Software Driver
 
+#data
+ipx::add_file_group -type software_driver {} [ipx::current_core]
+ipx::add_file driver/data/auroradma.tcl [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type tclSource [ipx::get_files driver/data/auroradma.tcl -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/data/auroradma.mdd [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type mdd [ipx::get_files driver/data/auroradma.mdd -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
 
+#src
+ipx::add_file driver/src/xaxidma.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma.h -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_sinit.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_sinit.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_g.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_g.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_bd.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_bd.h -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_bdring.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_bdring.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_hw.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_hw.h -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_porting_guide.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_porting_guide.h -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xdebug.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xdebug.h -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_selftest.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_selftest.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/Makefile [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type unknown [ipx::get_files driver/src/Makefile -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_bdring.h [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_bdring.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+ipx::add_file driver/src/xaxidma_bd.c [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]
+set_property type cSource [ipx::get_files driver/src/xaxidma_bd.c -of_objects [ipx::get_file_groups xilinx_softwaredriver -of_objects [ipx::current_core]]]
+
+ipx::remove_file_group xilinx_implementation [ipx::current_core]
 
 
 # Save IP and close project
