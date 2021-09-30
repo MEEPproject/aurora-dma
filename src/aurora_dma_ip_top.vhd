@@ -41,7 +41,19 @@ entity aurora_dma_ip_top is
   C_M_AXIS_S2MM_TDATA_WIDTH        : integer := 256;
   C_ADDR_WIDTH                     : integer := 32;
   C_S_AXI_LITE_ADDR_WIDTH          : integer := 10;
-  C_S_AXI_LITE_DATA_WIDTH          : integer := 32
+  C_S_AXI_LITE_DATA_WIDTH          : integer := 32;
+  C_INCLUDE_MM2S                   : integer := 1;
+  C_INCLUDE_MM2S_DRE               : integer := 0;
+  C_INCLUDE_MM2S_SF                : integer := 1;
+  C_INCLUDE_S2MM                   : integer := 1;
+  C_INCLUDE_S2MM_DRE               : integer := 0;
+  C_INCLUDE_S2MM_SF                : integer := 1;
+  C_INCLUDE_SG                     : integer := 0;
+  C_MM2S_BURST_SIZE                : integer := 4;
+  C_S2MM_BURST_SIZE                : integer := 4;
+  C_PRMRY_IS_ACLK_ASYNC            : integer := 1;
+  C_SG_LENGTH_WIDTH                : integer := 16
+  
   );
   port (
     
