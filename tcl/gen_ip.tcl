@@ -32,8 +32,6 @@ set_property SUPPORTED_FAMILIES ${family_lifecycle} ${ip_core}
 # ipx::add_bus_parameter RUSER_WIDTH [ipx::get_bus_interfaces S_AXI -of_objects [ipx::current_core]] 
 
 
-
-
 # Associate AXI/AXIS interfaces and reset with clock
 #set aclk_intf [ipx::get_bus_interfaces ACLK -of_objects ${ip_core}]
 #set aclk_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $aclk_intf]
