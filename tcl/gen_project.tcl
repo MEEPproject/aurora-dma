@@ -83,4 +83,3 @@ puts "Project generation ended successfully"
 source $root_dir/tcl/project_options.tcl
 source $root_dir/tcl/gen_ip.tcl
 #source $root_dir/tcl/gen_bitstream.tcl
-
