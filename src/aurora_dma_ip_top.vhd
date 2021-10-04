@@ -140,7 +140,8 @@ entity aurora_dma_ip_top is
     --Aurora_to_dma
     S0_AXIS_S2MM_TDATA   : out std_logic_vector(C_M_AXIS_S2MM_TDATA_WIDTH-1 downto 0);
     S0_AXIS_S2MM_TVALID  : out std_logic;
-    
+    S0_AXIS_S2MM_TKEEP   : out std_logic_vector(31 downto 0);
+    S0_AXIS_S2MM_TLAST   : out std_logic;
 
     -- Core status
     CHANNEL_UP : out std_logic;
@@ -153,7 +154,8 @@ entity aurora_dma_ip_top is
     RXP          : in  std_logic_vector (0 to 3);
     TXN          : out std_logic_vector (0 to 3);
     TXP          : out std_logic_vector (0 to 3);
-    USER_CLK_OUT : out std_logic
+    USER_CLK_OUT : out std_logic;
+    EXT_RESET    : in std_logic
 
 
     );
@@ -399,7 +401,7 @@ COMPONENT axis_subset_converter_0
   PORT (
     aclk : IN STD_LOGIC;
     aresetn : IN STD_LOGIC;
-    s_axis_tvalid : IN STD_LOGIC;
+   s_axis_tvalid : IN STD_LOGIC;
     s_axis_tdata : IN STD_LOGIC_VECTOR(255 DOWNTO 0);
     m_axis_tvalid : OUT STD_LOGIC;
     m_axis_tready : IN STD_LOGIC;
@@ -409,6 +411,8 @@ COMPONENT axis_subset_converter_0
     transfer_dropped : OUT STD_LOGIC
   );
 END COMPONENT;
+
+
 
 --DMA-to-Aurora
 COMPONENT axis_subset_converter_1
@@ -629,13 +633,15 @@ aurora_core : aurora_64b66b_0
 
 
     --Aurora_to_dma
-    S0_AXIS_S2MM_TDATA   <= aurora_dma_s_tdata;
-    S0_AXIS_S2MM_TVALID  <= aurora_dma_s_tvalid;
+    S0_AXIS_S2MM_TDATA   <= aurora_dma_m_tdata;
+    S0_AXIS_S2MM_TVALID  <= aurora_dma_m_tvalid;
+    S0_AXIS_S2MM_TKEEP   <= aurora_dma_m_tkeep;
+    S0_AXIS_S2MM_TLAST   <= aurora_dma_m_tlast;
 
 aurora_dma : axis_subset_converter_0
   PORT MAP (
     aclk => user_clock_out,
-    aresetn => peripheral_aresetn_aux(0),
+    aresetn => EXT_RESET,
     s_axis_tvalid => aurora_dma_s_tvalid,
     s_axis_tdata => aurora_dma_s_tdata,
     m_axis_tvalid => aurora_dma_m_tvalid,
@@ -655,7 +661,7 @@ aurora_dma : axis_subset_converter_0
 dma_aurora : axis_subset_converter_1
   port map (
     aclk                 => user_clock_out,
-    aresetn              => peripheral_aresetn_aux(0),
+    aresetn              => EXT_RESET,
     s_axis_tvalid        => dma_aurora_s_tvalid,
     s_axis_tready        => dma_aurora_s_tready,
     s_axis_tdata         => dma_aurora_s_tdata,
@@ -669,9 +675,9 @@ dma_aurora : axis_subset_converter_1
 
 ext_reset_in <= not reset_ui_aux;
 
-aux_reset_in <= '1';
-mb_debug_sys_rst <= '1';
-dcm_locked <= '1';
+--aux_reset_in <= '1';
+--mb_debug_sys_rst <= '1';
+--dcm_locked <= '1';
 proc_system_reset_0 : proc_sys_reset_0
   port map (
     slowest_sync_clk     => user_clock_out,

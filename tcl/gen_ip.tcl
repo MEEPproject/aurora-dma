@@ -53,7 +53,7 @@ ipx::infer_bus_interface USER_CLK_OUT xilinx.com:signal:clock_rtl:1.0 [ipx::curr
 ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces USER_CLK_OUT -of_objects [ipx::current_core]]
 set user_clk_out_intf [ipx::get_bus_interfaces USER_CLK_OUT -of_objects ${ip_core}]
 set user_clk_out_assoc_intf [ipx::add_bus_parameter ASSOCIATED_BUSIF $user_clk_out_intf]
-set_property value M_AXI_MM2S:M_AXI_S2MM [ipx::add_bus_parameter ASSOCIATED_BUSIF [ipx::get_bus_interfaces USER_CLK_OUT]]
+set_property value M_AXI_MM2S:M_AXI_S2MM:M0_AXIS_MM2S:S0_AXIS_S2MM [ipx::add_bus_parameter ASSOCIATED_BUSIF [ipx::get_bus_interfaces USER_CLK_OUT]]
 
 #Set S_AXI_LITE_DMA_ACLK
 ipx::infer_bus_interface S_AXI_LITE_DMA_ACLK xilinx.com:signal:clock_rtl:1.0 [ipx::current_core]
