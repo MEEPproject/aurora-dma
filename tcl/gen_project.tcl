@@ -70,7 +70,7 @@ upgrade_ip [get_ips {axi_dma_0}]
 upgrade_ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 [get_ips {aurora_64b66b_0}] -log ip_upgrade.log
 upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_0}] -log ip_upgrade.log
 upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_1}] -log ip_upgrade.log
-upgrade_ip [get_ips {proc_sys_reset_0}]
+
 
 # Add Constraint files to project
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
