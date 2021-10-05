@@ -431,21 +431,7 @@ COMPONENT axis_subset_converter_1
   );
 END COMPONENT;
 
--- Processor System Reset
-COMPONENT proc_sys_reset_0
-  PORT (
-    slowest_sync_clk     : in  std_logic;
-    ext_reset_in         : in  std_logic;
-    aux_reset_in         : in  std_logic;
-    mb_debug_sys_rst     : in  std_logic;
-    dcm_locked           : in  std_logic;
-    mb_reset             : out std_logic;
-    bus_struct_reset     : out std_logic_vector(0 downto 0);
-    peripheral_reset     : out std_logic_vector(0 downto 0);
-    interconnect_aresetn : out std_logic_vector(0 downto 0);
-    peripheral_aresetn   : out std_logic_vector(0 downto 0)
-  );
-END COMPONENT;
+
 
 
 begin
@@ -675,21 +661,6 @@ dma_aurora : axis_subset_converter_1
 
 ext_reset_in <= not reset_ui_aux;
 
---aux_reset_in <= '1';
---mb_debug_sys_rst <= '1';
---dcm_locked <= '1';
-proc_system_reset_0 : proc_sys_reset_0
-  port map (
-    slowest_sync_clk     => user_clock_out,
-    ext_reset_in         => ext_reset_in,
-    aux_reset_in         => aux_reset_in,
-    mb_debug_sys_rst     => mb_debug_sys_rst,
-    dcm_locked           => dcm_locked,
-    mb_reset             => mb_reset,
-    bus_struct_reset     => bus_struct_reset,
-    peripheral_reset     => peripheral_reset,
-    interconnect_aresetn => interconnect_aresetn,
-    peripheral_aresetn   => peripheral_aresetn_aux
-    );
+
 
   end architecture rtl;
