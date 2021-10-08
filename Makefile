@@ -13,6 +13,10 @@ generate_ip:
 		$(VIVADO_XLNX) $(VIVADO_OPT)  ./tcl/gen_project.tcl
 
 
+clean:
+	git clean -f
+	cd ip; find . -type f ! -name "*.xci" -exec rm {} \;
+	rm -rf xgui project
 
 
 
