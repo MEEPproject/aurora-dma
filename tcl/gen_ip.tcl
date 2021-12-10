@@ -64,6 +64,11 @@ set_property value S_AXI_LITE $s_axi_lite_dma_aclk_assoc_intf
 set s_axi_lite_aclk_assoc_reset [ipx::add_bus_parameter ASSOCIATED_RESET $s_axi_lite_dma_aclk_intf]
 set_property value AXI_DMA_RESETN $s_axi_lite_aclk_assoc_reset
 
+## Relative path to IP root directory
+ipx::create_xgui_files ${ip_core} -logo_file "misc/BSC-Logo.png"
+set_property type LOGO [ipx::get_files "misc/BSC-Logo.png" -of_objects [ipx::get_file_groups xilinx_utilityxitfiles -of_objects [ipx::current_core]]]
+
+
 
 # SET SYS_RESET
 
