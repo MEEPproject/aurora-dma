@@ -52,6 +52,8 @@ validate_bd_design
 save_bd_design
 }
 
+source $root_dir/ip/aurora6466b.tcl
+
 ####################################################
 # MAIN FLOW
 ####################################################
@@ -64,10 +66,10 @@ set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
 add_files ${src_files}
 add_files -quiet ${ip_files}
 
-upgrade_ip [get_ips {axi_dma_0}]
-upgrade_ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 [get_ips {aurora_64b66b_0}] -log ip_upgrade.log
-upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_0}] -log ip_upgrade.log
-upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_1}] -log ip_upgrade.log
+#upgrade_ip [get_ips {axi_dma_0}]
+#upgrade_ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 [get_ips {aurora_64b66b_0}] -log ip_upgrade.log
+#upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_0}] -log ip_upgrade.log
+#upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_1}] -log ip_upgrade.log
 
 
 # Add Constraint files to project
