@@ -53,6 +53,8 @@ save_bd_design
 }
 
 source $root_dir/ip/aurora6466b.tcl
+source $root_dir/ip/axi_dma.tcl
+source $root_dir/ip/axi_subset_converter.tcl
 
 ####################################################
 # MAIN FLOW
