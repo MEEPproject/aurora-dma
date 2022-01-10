@@ -15,7 +15,7 @@ generate_ip:
 
 clean:
 	git clean -f
-	cd ip; find . -type f ! -name "*.xci" -exec rm {} \;
+	@(cd ip; find . -type f ! -name "*.tcl" -exec rm -r {} \;)
 	rm -rf xgui project
 
 
