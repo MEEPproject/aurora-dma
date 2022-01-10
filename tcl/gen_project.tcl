@@ -59,8 +59,7 @@ source $root_dir/ip/axi_subset_converter.tcl
 ####################################################
 # MAIN FLOW
 ####################################################
-set g_top_name aurora_dma_ip_top
-#${g_project_name}_top
+set g_top_name ${g_project_name}_top
 
 set top_module "$root_dir/src/${g_top_name}.vhd"
 set src_files [glob ${root_dir}/src/*]
@@ -68,13 +67,8 @@ set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
 add_files ${src_files}
 add_files -quiet ${ip_files}
 
-#upgrade_ip [get_ips {axi_dma_0}]
-#upgrade_ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 [get_ips {aurora_64b66b_0}] -log ip_upgrade.log
-#upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_0}] -log ip_upgrade.log
-#upgrade_ip -vlnv xilinx.com:ip:axis_subset_converter:1.1 [get_ips {axis_subset_converter_1}] -log ip_upgrade.log
-
-
 # Add Constraint files to project
+# TODO: Add Out Of Context constraints in case it is necessary in the future
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_timing.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_ila.xdc"

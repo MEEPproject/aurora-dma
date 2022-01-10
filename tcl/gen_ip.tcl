@@ -1,14 +1,14 @@
-source [pwd]/tcl/environment.tcl
-source [pwd]/tcl/project_options.tcl
+source $root_dir/tcl/environment.tcl
+source $root_dir/tcl/project_options.tcl
 
 set ip_properties [ list \
     vendor "meep-project.eu" \
     library "MEEP" \
-    name ${g_design_name} \
+    name "MEEP_${g_design_name}" \
     version "$g_ip_version" \
     taxonomy "/MEEP_IP" \
-    display_name "MEEP ${g_design_name}" \
-    description "We want to package the Aurora DMA design" \
+    display_name "MEEP Aurora DMA" \
+    description "${g_ip_description}" \
     vendor_display_name "MEEP Project" \
     company_url "https://meep-project.eu/" \
     ]
