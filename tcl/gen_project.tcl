@@ -1,3 +1,28 @@
+# Copyright 2022 Barcelona Supercomputing Center-Centro Nacional de Supercomputación
+
+# Licensed under the Solderpad Hardware License v 2.1 (the "License");
+# you may not use this file except in compliance with the License, or, at your option, the Apache License version 2.0.
+# You may obtain a copy of the License at
+# 
+#     http://www.solderpad.org/licenses/SHL-2.1
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Author: Alexander Kropotov, BSC-CNS
+# Date: 09.05.2023
+# Description: 
+
+# Parameters to apply:
+# $1 FPGA_BOARD:      u55c / u280
+# $2 QSFP_PORT:       qsfp0 / qsfp1
+# $3 DMA_MEM:         hbm / sram
+# $4 SAXI_FREQ in Hz: 100000000
+# $5 SAXI_PROTOCOL:   AXI4LITE-64 / AXI4-512 /...
+
 namespace eval _tcl {
 proc get_script_folder {} {
     set script_path [file normalize [info script]]
@@ -17,7 +42,18 @@ if { $::argc > 0 } {
 
         set g_board_part [lindex $argv 0]
         set g_fpga_part "xc${g_board_part}-fsvh2892-2L-e"
-
+        if { $::argc > 1 } {
+          set g_eth_port [lindex $argv 1]
+        }
+        if { $::argc > 2 } {
+          set g_dma_mem  [lindex $argv 2]
+        }
+        if { $::argc > 3 } {
+          set g_saxi_freq  [lindex $argv 3]
+        }
+        if { $::argc > 3 } {
+          set g_saxi_prot  [lindex $argv 4]
+        }
 }
 
 set root_dir $g_root_dir
@@ -47,18 +83,30 @@ if { $g_useBlockDesign eq "Y" } {
 create_bd_design -dir $root_dir/bd ${design_name}
 update_ip_catalog -rebuild
 source ${root_dir}/tcl/gen_bd.tcl
+
+# creating isolated Ethernet subsystem BD for integration with OpenPiton
+source $root_dir/tcl/eth_cmac_syst.tcl
+cr_bd_Eth_CMAC_syst ""
+# creating the IP of isolated Ethernet subsystem
+source $root_dir/tcl/eth_syst_ip.tcl
+# also just extracting hw parameters from TCL and creating C-header
+source $root_dir/tcl/eth_syst_xparams.tcl
+
 create_root_design ""
 validate_bd_design
 save_bd_design
-}
+make_wrapper -files [get_files $root_dir/bd/${g_project_name}/${g_project_name}.bd] -top
+add_files -norecurse           $root_dir/bd/${g_project_name}/hdl/${g_project_name}_wrapper.v
+
+} else {
 
 source $root_dir/ip/aurora6466b.tcl
 source $root_dir/ip/axi_dma.tcl
 source $root_dir/ip/axi_subset_converter.tcl
 
-####################################################
+##################################################################
 # MAIN FLOW
-####################################################
+##################################################################
 set g_top_name ${g_project_name}_top
 
 set top_module "$root_dir/src/${g_top_name}.vhd"
@@ -67,15 +115,21 @@ set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
 add_files ${src_files}
 add_files -quiet ${ip_files}
 
+set_property target_language VHDL [current_project]
+source $root_dir/tcl/project_options.tcl
+source $root_dir/tcl/gen_ip.tcl
+}
+
 # Add Constraint files to project
 # TODO: Add Out Of Context constraints in case it is necessary in the future
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_pinout.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_timing.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_ila.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_alveo280.xdc"
-set_property target_language VHDL [current_project]
+
+add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_${g_board_part}.xdc"
+# set_property PROCESSING_ORDER LATE [get_files "$root_dir/xdc/${g_project_name}_${g_board_part}.xdc"]
+
 puts "Project generation ended successfully"
 #source $root_dir/tcl/gen_runs.tcl
-source $root_dir/tcl/project_options.tcl
-source $root_dir/tcl/gen_ip.tcl
 #source $root_dir/tcl/gen_bitstream.tcl
