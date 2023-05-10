@@ -115,9 +115,6 @@ if { $g_useBlockDesign eq "y" } {
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_ila.xdc"
 #add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_alveo280.xdc"
 
-add_files -fileset [get_filesets constrs_1] "$root_dir/xdc/${g_project_name}_${g_board_part}.xdc"
-# set_property PROCESSING_ORDER LATE [get_files "$root_dir/xdc/${g_project_name}_${g_board_part}.xdc"]
-
 puts "Project generation ended successfully"
 #source $root_dir/tcl/gen_runs.tcl
 #source $root_dir/tcl/gen_bitstream.tcl
