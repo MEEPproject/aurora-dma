@@ -75,49 +75,37 @@ variable design_name
 set design_name $g_project_name
 set ip_dir_list [list \
      $root_dir/ip]
-	
 
 set_property  ip_repo_paths  $ip_dir_list [current_project]
 
-if { $g_useBlockDesign eq "Y" } {
-create_bd_design -dir $root_dir/bd ${design_name}
-update_ip_catalog -rebuild
-source ${root_dir}/tcl/gen_bd.tcl
+if { $g_useBlockDesign eq "y" } {
+  # create_bd_design -dir $root_dir/bd ${design_name}
+  # update_ip_catalog -rebuild
 
-# creating isolated Ethernet subsystem BD for integration with OpenPiton
-source $root_dir/tcl/eth_cmac_syst.tcl
-cr_bd_Eth_CMAC_syst ""
-# creating the IP of isolated Ethernet subsystem
-source $root_dir/tcl/eth_syst_ip.tcl
-# also just extracting hw parameters from TCL and creating C-header
-source $root_dir/tcl/eth_syst_xparams.tcl
-
-create_root_design ""
-validate_bd_design
-save_bd_design
-make_wrapper -files [get_files $root_dir/bd/${g_project_name}/${g_project_name}.bd] -top
-add_files -norecurse           $root_dir/bd/${g_project_name}/hdl/${g_project_name}_wrapper.v
+  # creating isolated Aurora subsystem BD
+  source $root_dir/tcl/aur_syst_bd.tcl
+  cr_bd_Aur_syst ""
+  # creating the IP of isolated Aurora subsystem
+  source $root_dir/tcl/aur_syst_ip.tcl
+  # also just extracting hw parameters from TCL and creating C-header
+  source $root_dir/tcl/aur_syst_xparams.tcl
 
 } else {
 
-source $root_dir/ip/aurora6466b.tcl
-source $root_dir/ip/axi_dma.tcl
-source $root_dir/ip/axi_subset_converter.tcl
+  source $root_dir/ip/aurora6466b.tcl
+  source $root_dir/ip/axi_dma.tcl
+  source $root_dir/ip/axi_subset_converter.tcl
 
-##################################################################
-# MAIN FLOW
-##################################################################
-set g_top_name ${g_project_name}_top
+  set g_top_name ${g_project_name}_top
+  set top_module "$root_dir/src/${g_top_name}.vhd"
+  set src_files [glob ${root_dir}/src/*]
+  set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
+  add_files ${src_files}
+  add_files -quiet ${ip_files}
 
-set top_module "$root_dir/src/${g_top_name}.vhd"
-set src_files [glob ${root_dir}/src/*]
-set ip_files [glob -nocomplain ${root_dir}/ip/*/*.xci]
-add_files ${src_files}
-add_files -quiet ${ip_files}
-
-set_property target_language VHDL [current_project]
-source $root_dir/tcl/project_options.tcl
-source $root_dir/tcl/gen_ip.tcl
+  set_property target_language VHDL [current_project]
+  source $root_dir/tcl/project_options.tcl
+  source $root_dir/tcl/gen_ip.tcl
 }
 
 # Add Constraint files to project
