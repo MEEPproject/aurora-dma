@@ -354,49 +354,27 @@ if { ${g_dma_mem} eq "hbm" } {
     set g_eth100gb_freq "156.25"
     if { ${g_eth_port} eq "qsfp0" } {
       set g_cmac_loc      "Quad_X0Y6"
-      set g_gt_grp_loc    "X0Y40 X0Y41 X0Y42 X0Y43"
-      set g_lane1_loc     "X0Y40"
-      set g_lane2_loc     "X0Y41"
-      set g_lane3_loc     "X0Y42"
-      set g_lane4_loc     "X0Y43"
+      set g_lane1_loc     "X0Y24"
     }
     if { ${g_eth_port} eq "qsfp1" } {
-      # set g_cmac_loc      "CMACE4_X0Y7"
-      # using non defualt for QSFP1 CMAC provides better timing
-      set g_cmac_loc      "Quad_X0Y6"
-      set g_gt_grp_loc    "X0Y44 X0Y45 X0Y46 X0Y47"
-      set g_lane1_loc     "X0Y44"
-      set g_lane2_loc     "X0Y45"
-      set g_lane3_loc     "X0Y46"
-      set g_lane4_loc     "X0Y47"
+      set g_cmac_loc      "Quad_X0Y7"
+      set g_lane1_loc     "X0Y28"
     }
   }
   if { ${g_board_part} eq "u55c" } {
     set g_eth100gb_freq "161.1328125"
     if { ${g_eth_port} eq "qsfp0" } {
       set g_cmac_loc      "Quad_X0Y3"
-      set g_gt_grp_loc    "X0Y12 X0Y13 X0Y14 X0Y15"
       set g_lane1_loc     "X0Y12"
-      set g_lane2_loc     "X0Y13"
-      set g_lane3_loc     "X0Y14"
-      set g_lane4_loc     "X0Y15"
     }
     if { ${g_eth_port} eq "qsfp1" } {
       set g_cmac_loc      "Quad_X0Y4"
-      set g_gt_grp_loc    "X0Y28 X0Y29 X0Y30 X0Y31"
-      set g_lane1_loc     "X0Y28"
-      set g_lane2_loc     "X0Y29"
-      set g_lane3_loc     "X0Y30"
-      set g_lane4_loc     "X0Y31"
+      set g_lane1_loc     "X0Y16"
     }
   }
   set aurora_64b66b_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 aurora_64b66b_0 ]
   set_property -dict [ list \
-   CONFIG.CHANNEL_ENABLE $g_gt_grp_loc \
    CONFIG.C_AURORA_LANES {4} \
-   CONFIG.C_GT_LOC_2 {2} \
-   CONFIG.C_GT_LOC_3 {3} \
-   CONFIG.C_GT_LOC_4 {4} \
    CONFIG.C_REFCLK_FREQUENCY $g_eth100gb_freq \
    CONFIG.C_REFCLK_SOURCE "MGTREFCLK0_of_$g_cmac_loc" \
    CONFIG.C_START_LANE $g_lane1_loc \
