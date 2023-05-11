@@ -84,7 +84,7 @@ if { $g_useBlockDesign eq "y" } {
 
   # creating isolated Aurora subsystem BD
   source $root_dir/tcl/aur_syst_bd.tcl
-  cr_bd_Aur_syst ""
+  cr_bd_aurora_dma ""
   # creating the IP of isolated Aurora subsystem
   source $root_dir/tcl/aur_syst_ip.tcl
   # also just extracting hw parameters from TCL and creating C-header
