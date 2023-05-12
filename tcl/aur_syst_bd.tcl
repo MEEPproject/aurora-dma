@@ -353,32 +353,32 @@ if { ${g_dma_mem} eq "hbm" } {
   if { ${g_board_part} eq "u280" } {
     set g_eth100gb_freq "156.25"
     if { ${g_eth_port} eq "qsfp0" } {
-      set g_cmac_loc      "Quad_X0Y6"
-      set g_lane1_loc     "X0Y24"
+      set g_quad_loc      "Quad_X0Y10"
+      set g_lane1_loc     "X0Y40"
     }
     if { ${g_eth_port} eq "qsfp1" } {
-      set g_cmac_loc      "Quad_X0Y7"
-      set g_lane1_loc     "X0Y28"
+      set g_quad_loc      "Quad_X0Y11"
+      set g_lane1_loc     "X0Y44"
     }
   }
   if { ${g_board_part} eq "u55c" } {
     set g_eth100gb_freq "161.1328125"
     if { ${g_eth_port} eq "qsfp0" } {
-      set g_cmac_loc      "Quad_X0Y3"
-      set g_lane1_loc     "X0Y12"
+      set g_quad_loc      "Quad_X0Y6"
+      set g_lane1_loc     "X0Y24"
     }
     if { ${g_eth_port} eq "qsfp1" } {
-      set g_cmac_loc      "Quad_X0Y4"
-      set g_lane1_loc     "X0Y16"
+      set g_quad_loc      "Quad_X0Y7"
+      set g_lane1_loc     "X0Y28"
     }
   }
   set aurora_64b66b_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:aurora_64b66b:12.0 aurora_64b66b_0 ]
   set_property -dict [ list \
    CONFIG.C_AURORA_LANES {4} \
    CONFIG.C_REFCLK_FREQUENCY $g_eth100gb_freq \
-   CONFIG.C_REFCLK_SOURCE "MGTREFCLK0_of_$g_cmac_loc" \
+   CONFIG.C_REFCLK_SOURCE "MGTREFCLK0_of_$g_quad_loc" \
    CONFIG.C_START_LANE $g_lane1_loc \
-   CONFIG.C_START_QUAD $g_cmac_loc \
+   CONFIG.C_START_QUAD $g_quad_loc \
    CONFIG.C_UCOLUMN_USED {left} \
    CONFIG.SupportLevel {1} \
    CONFIG.TransceiverControl {false} \
