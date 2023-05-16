@@ -377,12 +377,10 @@ if { ${g_dma_mem} eq "hbm" } {
   set_property -dict [ list \
    CONFIG.C_AURORA_LANES {4} \
    CONFIG.C_REFCLK_FREQUENCY $g_eth100gb_freq \
-   CONFIG.C_REFCLK_SOURCE "MGTREFCLK0_of_$g_quad_loc" \
    CONFIG.C_START_LANE $g_lane1_loc \
    CONFIG.C_START_QUAD $g_quad_loc \
    CONFIG.C_UCOLUMN_USED {left} \
    CONFIG.SupportLevel {1} \
-   CONFIG.TransceiverControl {false} \
    CONFIG.drp_mode {AXI4_LITE} \
  ] $aurora_64b66b_0
   set_property USER_COMMENTS.comment_1 "http://www.xilinx.com/support/documentation/ip_documentation/cmac_usplus/v3_1/pg203-cmac-usplus.pdf#page=117
