@@ -381,11 +381,12 @@ if { ${g_dma_mem} eq "hbm" } {
    CONFIG.C_START_QUAD $g_quad_loc \
    CONFIG.C_UCOLUMN_USED {left} \
    CONFIG.SupportLevel {1} \
-   CONFIG.drp_mode {AXI4_LITE} \
+   CONFIG.drp_mode {Disabled} \
  ] $aurora_64b66b_0
   set_property USER_COMMENTS.comment_1 "http://www.xilinx.com/support/documentation/ip_documentation/cmac_usplus/v3_1/pg203-cmac-usplus.pdf#page=117
 http://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88" [get_bd_pins /aurora_64b66b_0/loopback]
-  set_property USER_COMMENTS.comment_4 "https://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88" [get_bd_pins /aurora_64b66b_0/loopback]
+  set_property USER_COMMENTS.comment_2 "https://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88" [get_bd_pins /aurora_64b66b_0/loopback]
+  set_property USER_COMMENTS.comment_3 "Debug AXI inteface is disabled for Aurora, otherwise channel_up and lane_up signals never become activated." [get_bd_cells aurora_64b66b_0]
 
   set g_refport_freq [format {%0.0f} [expr {$g_eth100gb_freq*1000000+0.5}] ]
   puts "PORT FREQUENCY: $g_refport_freq"
@@ -627,11 +628,11 @@ But functionality is fine for at least depth 16." [get_bd_cells /rx_fifo]
   # Create instance: periph_connect, and set properties
   set periph_connect [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 periph_connect ]
   set_property -dict [ list \
-   CONFIG.NUM_MI {12} \
+   CONFIG.NUM_MI {8} \
    CONFIG.NUM_SI {1} \
  ] $periph_connect
 if { ${g_dma_mem} eq "hbm" } {
-  set_property -dict [list CONFIG.NUM_MI {9}] [get_bd_cells periph_connect]
+  set_property -dict [list CONFIG.NUM_MI {5}] [get_bd_cells periph_connect]
 }
 
   # Create instance: tx_axis_switch, and set properties
@@ -652,10 +653,6 @@ if { ${g_dma_mem} eq "hbm" } {
   connect_bd_intf_net -intf_net periph_connect_M02_AXI [get_bd_intf_pins periph_connect/M02_AXI] [get_bd_intf_pins rx_axis_switch/S_AXI_CTRL]
   connect_bd_intf_net -intf_net periph_connect_M03_AXI [get_bd_intf_pins gt_ctl/S_AXI] [get_bd_intf_pins periph_connect/M03_AXI]
   connect_bd_intf_net -intf_net periph_connect_M04_AXI [get_bd_intf_pins axi_timer_0/S_AXI] [get_bd_intf_pins periph_connect/M04_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M05_AXI [get_bd_intf_pins aurora_64b66b_0/AXILITE_DRP_IF_0] [get_bd_intf_pins periph_connect/M05_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M06_AXI [get_bd_intf_pins aurora_64b66b_0/AXILITE_DRP_IF_1] [get_bd_intf_pins periph_connect/M06_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M07_AXI [get_bd_intf_pins aurora_64b66b_0/AXILITE_DRP_IF_2] [get_bd_intf_pins periph_connect/M07_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M08_AXI [get_bd_intf_pins aurora_64b66b_0/AXILITE_DRP_IF_3] [get_bd_intf_pins periph_connect/M08_AXI]
   connect_bd_intf_net -intf_net periph_connect_S00_AXI [get_bd_intf_ports s_axi] [get_bd_intf_pins periph_connect/S00_AXI]
   connect_bd_intf_net -intf_net tx_axis_switch_M01_AXIS [get_bd_intf_pins aurora_64b66b_0/USER_DATA_S_AXIS_TX] [get_bd_intf_pins tx_axis_switch/M01_AXIS]
   connect_bd_intf_net -intf_net rx_axis_switch_M00_AXIS [get_bd_intf_pins rx_axis_switch/M00_AXIS] [get_bd_intf_pins tx_axis_switch/S00_AXIS]
@@ -672,9 +669,9 @@ if { ${g_dma_mem} eq "sram" } {
   connect_bd_intf_net -intf_net rx_mem_dma_BRAM_PORTA [get_bd_intf_pins eth_rx_mem/BRAM_PORTB] [get_bd_intf_pins rx_mem_dma/BRAM_PORTA]
   connect_bd_intf_net -intf_net sg_mem_cpu_BRAM_PORTA [get_bd_intf_pins eth_sg_mem/BRAM_PORTA] [get_bd_intf_pins sg_mem_cpu/BRAM_PORTA]
   connect_bd_intf_net -intf_net sg_mem_dma_BRAM_PORTA [get_bd_intf_pins eth_sg_mem/BRAM_PORTB] [get_bd_intf_pins sg_mem_dma/BRAM_PORTA]
-  connect_bd_intf_net -intf_net periph_connect_M09_AXI [get_bd_intf_pins periph_connect/M09_AXI] [get_bd_intf_pins tx_mem_cpu/S_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M10_AXI [get_bd_intf_pins periph_connect/M10_AXI] [get_bd_intf_pins rx_mem_cpu/S_AXI]
-  connect_bd_intf_net -intf_net periph_connect_M11_AXI [get_bd_intf_pins periph_connect/M11_AXI] [get_bd_intf_pins sg_mem_cpu/S_AXI]
+  connect_bd_intf_net -intf_net periph_connect_M05_AXI [get_bd_intf_pins periph_connect/M05_AXI] [get_bd_intf_pins tx_mem_cpu/S_AXI]
+  connect_bd_intf_net -intf_net periph_connect_M06_AXI [get_bd_intf_pins periph_connect/M06_AXI] [get_bd_intf_pins rx_mem_cpu/S_AXI]
+  connect_bd_intf_net -intf_net periph_connect_M07_AXI [get_bd_intf_pins periph_connect/M07_AXI] [get_bd_intf_pins sg_mem_cpu/S_AXI]
   connect_bd_intf_net -intf_net tx_mem_dma_BRAM_PORTA [get_bd_intf_pins eth_tx_mem/BRAM_PORTB] [get_bd_intf_pins tx_mem_dma/BRAM_PORTA]
 }
 if { ${g_dma_mem} eq "hbm" } {
@@ -738,10 +735,6 @@ if { ${g_dma_mem} eq "hbm" } {
 
   # Create address segments
   assign_bd_address -offset 0x00005000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs axi_timer_0/S_AXI/Reg] -force
-  assign_bd_address -offset 0x00010000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs aurora_64b66b_0/AXILITE_DRP_IF_0/Reg] -force
-  assign_bd_address -offset 0x00020000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs aurora_64b66b_0/AXILITE_DRP_IF_1/Reg] -force
-  assign_bd_address -offset 0x00040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs aurora_64b66b_0/AXILITE_DRP_IF_3/Reg] -force
-  assign_bd_address -offset 0x00030000 -range 0x00010000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs aurora_64b66b_0/AXILITE_DRP_IF_2/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs eth_dma/S_AXI_LITE/Reg] -force
   assign_bd_address -offset 0x00003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs gt_ctl/S_AXI/Reg] -force
   assign_bd_address -offset 0x00002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces s_axi] [get_bd_addr_segs rx_axis_switch/S_AXI_CTRL/Reg] -force
