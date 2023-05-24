@@ -383,10 +383,9 @@ if { ${g_dma_mem} eq "hbm" } {
    CONFIG.SupportLevel {1} \
    CONFIG.drp_mode {Disabled} \
  ] $aurora_64b66b_0
-  set_property USER_COMMENTS.comment_1 "http://www.xilinx.com/support/documentation/ip_documentation/cmac_usplus/v3_1/pg203-cmac-usplus.pdf#page=117
-http://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88" [get_bd_pins /aurora_64b66b_0/loopback]
-  set_property USER_COMMENTS.comment_2 "https://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88" [get_bd_pins /aurora_64b66b_0/loopback]
-  set_property USER_COMMENTS.comment_3 "Debug AXI inteface is disabled for Aurora, otherwise channel_up and lane_up signals never become activated." [get_bd_cells aurora_64b66b_0]
+  set_property USER_COMMENTS.comment_1 "Debug AXI inteface is disabled for Aurora, otherwise channel_up and lane_up signals never become activated." [get_bd_cells aurora_64b66b_0]
+  set_property USER_COMMENTS.comment_2 "pma_init resets both serial GT and Aurora: https://docs.xilinx.com/r/en-US/pg074-aurora-64b66b/Reset"        [get_bd_pins /aurora_64b66b_0/pma_init]
+  set_property USER_COMMENTS.comment_3 "https://www.xilinx.com/support/documentation/user_guides/ug578-ultrascale-gty-transceivers.pdf#page=88"      [get_bd_pins /aurora_64b66b_0/loopback]
 
   set g_refport_freq [format {%0.0f} [expr {$g_eth100gb_freq*1000000+0.5}] ]
   puts "PORT FREQUENCY: $g_refport_freq"
@@ -466,6 +465,14 @@ if { ${g_dma_mem} eq "sram" } {
    CONFIG.C_OPERATION {not} \
    CONFIG.C_SIZE {1} \
  ] $aur_sysrst_inv
+
+  # Create instance: ext_rst_inv, and set properties
+  set ext_rst_inv [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 ext_rst_inv ]
+  set_property -dict [ list \
+   CONFIG.C_OPERATION {not} \
+   CONFIG.C_SIZE {1} \
+ ] $ext_rst_inv
+
   # Create instance: gt_ctl, and set properties
   set gt_ctl [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 gt_ctl ]
   set_property -dict [ list \
@@ -515,6 +522,14 @@ if { ${g_dma_mem} eq "sram" } {
    CONFIG.DIN_TO {6} \
    CONFIG.DOUT_WIDTH {1} \
  ] $gt_ctl_6
+
+  # Create instance: gt_rst_comb, and set properties
+  set gt_rst_comb [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 gt_rst_comb ]
+  set_property -dict [ list \
+   CONFIG.C_OPERATION {or} \
+   CONFIG.C_SIZE {1} \
+   CONFIG.LOGO_FILE {data/sym_orgate.png} \
+ ] $gt_rst_comb
 
 if { ${g_dma_mem} eq "sram" } {
   # Create instance: rx_mem_cpu, and set properties
@@ -704,17 +719,19 @@ if { ${g_dma_mem} eq "hbm" } {
   connect_bd_net -net eth_dma_mm2s_introut [get_bd_pins concat_intc/In0] [get_bd_pins eth_dma/mm2s_introut]
   connect_bd_net -net eth_dma_s2mm_introut [get_bd_pins concat_intc/In1] [get_bd_pins eth_dma/s2mm_introut]
   connect_bd_net -net gt_ctl_gpio_io_o [get_bd_pins aurora_64b66b_0/loopback] [get_bd_pins gt_ctl/gpio_io_o] [get_bd_pins gt_ctl_3/Din] [get_bd_pins gt_ctl_4/Din] [get_bd_pins gt_ctl_5/Din] [get_bd_pins gt_ctl_6/Din]
+  connect_bd_net -net gt_rst_comb_Res [get_bd_pins aurora_64b66b_0/pma_init] [get_bd_pins gt_rst_comb/Res]
+  connect_bd_net -net ext_rst_inv_Res [get_bd_pins ext_rst_inv/Res] [get_bd_pins gt_rst_comb/Op2]
   connect_bd_net -net gt_ctl_3_Dout [get_bd_pins aurora_64b66b_0/gt_rxcdrovrden_in] [get_bd_pins gt_ctl_3/Dout]
   connect_bd_net -net gt_ctl_4_Dout [get_bd_pins aurora_64b66b_0/power_down] [get_bd_pins gt_ctl_4/Dout]
   connect_bd_net -net gt_ctl_5_Dout [get_bd_pins aurora_64b66b_0/reset_pb] [get_bd_pins gt_ctl_5/Dout]
-  connect_bd_net -net gt_ctl_6_Dout [get_bd_pins aurora_64b66b_0/pma_init] [get_bd_pins gt_ctl_6/Dout]
+  connect_bd_net -net gt_ctl_6_Dout [get_bd_pins gt_ctl_6/Dout] [get_bd_pins gt_rst_comb/Op1]
 if { ${g_dma_mem} eq "sram" } {
   connect_bd_net -net s_axi_clk_port [get_bd_ports s_axi_clk] [get_bd_pins aurora_64b66b_0/init_clk] [get_bd_pins axi_timer_0/s_axi_aclk] [get_bd_pins eth_dma/m_axi_sg_aclk] [get_bd_pins eth_dma/s_axi_lite_aclk] [get_bd_pins gt_ctl/s_axi_aclk] [get_bd_pins periph_connect/aclk] [get_bd_pins rx_axis_switch/s_axi_ctrl_aclk] [get_bd_pins rx_mem_cpu/s_axi_aclk] [get_bd_pins sg_mem_cpu/s_axi_aclk] [get_bd_pins sg_mem_dma/s_axi_aclk] [get_bd_pins tx_axis_switch/s_axi_ctrl_aclk] [get_bd_pins tx_mem_cpu/s_axi_aclk]
   connect_bd_net -net aurora_64b66b_0_user_clk_out [get_bd_pins aurora_64b66b_0/user_clk_out] [get_bd_pins eth_dma/m_axi_mm2s_aclk] [get_bd_pins eth_dma/m_axi_s2mm_aclk] [get_bd_pins rx_axis_switch/aclk] [get_bd_pins rx_mem_dma/s_axi_aclk] [get_bd_pins tx_axis_switch/aclk] [get_bd_pins tx_mem_dma/s_axi_aclk]
   connect_bd_net -net aurora_64b66b_0_gt_reset_out [get_bd_pins GT_STATUS/In8] [get_bd_pins aurora_64b66b_0/gt_reset_out]
   connect_bd_net -net aurora_64b66b_0_sys_reset_out [get_bd_pins GT_STATUS/In7] [get_bd_pins aur_sysrst_inv/Op1] [get_bd_pins aurora_64b66b_0/sys_reset_out]
   connect_bd_net -net aur_sysrst_inv_Res [get_bd_pins aur_sysrst_inv/Res] [get_bd_pins rx_axis_switch/aresetn] [get_bd_pins tx_axis_switch/aresetn] [get_bd_pins tx_mem_dma/s_axi_aresetn] [get_bd_pins rx_mem_dma/s_axi_aresetn]
-  connect_bd_net -net s_axi_resetn_port [get_bd_ports s_axi_resetn] [get_bd_pins axi_timer_0/s_axi_aresetn] [get_bd_pins eth_dma/axi_resetn] [get_bd_pins ext_rstn_inv/Op1] [get_bd_pins gt_ctl/s_axi_aresetn] [get_bd_pins periph_connect/aresetn] [get_bd_pins rx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins rx_mem_cpu/s_axi_aresetn] [get_bd_pins sg_mem_cpu/s_axi_aresetn] [get_bd_pins sg_mem_dma/s_axi_aresetn] [get_bd_pins tx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins tx_mem_cpu/s_axi_aresetn]
+  connect_bd_net -net s_axi_resetn_port [get_bd_ports s_axi_resetn] [get_bd_pins axi_timer_0/s_axi_aresetn] [get_bd_pins eth_dma/axi_resetn] [get_bd_pins ext_rst_inv/Op1] [get_bd_pins gt_ctl/s_axi_aresetn] [get_bd_pins periph_connect/aresetn] [get_bd_pins rx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins rx_mem_cpu/s_axi_aresetn] [get_bd_pins sg_mem_cpu/s_axi_aresetn] [get_bd_pins sg_mem_dma/s_axi_aresetn] [get_bd_pins tx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins tx_mem_cpu/s_axi_aresetn]
   connect_bd_net -net aurora_64b66b_0_gt_pll_lock [get_bd_pins GT_STATUS/In1] [get_bd_pins aurora_64b66b_0/gt_pll_lock]
 }
 if { ${g_dma_mem} eq "hbm" } {
@@ -723,7 +740,7 @@ if { ${g_dma_mem} eq "hbm" } {
   connect_bd_net -net aurora_64b66b_0_sys_reset_out [get_bd_pins GT_STATUS/In7] [get_bd_pins aur_sysrst_inv/Op1] [get_bd_pins aurora_64b66b_0/sys_reset_out] [get_bd_pins txrx_rst_gen/aux_reset_in]
   connect_bd_net -net aurora_64b66b_0_user_clk_out [get_bd_ports rx_clk] [get_bd_ports tx_clk] [get_bd_pins aurora_64b66b_0/user_clk_out] [get_bd_pins axi_reg_slice_rx/aclk] [get_bd_pins axi_reg_slice_tx/aclk] [get_bd_pins dma_connect_rx/aclk] [get_bd_pins dma_connect_tx/aclk] [get_bd_pins eth_dma/m_axi_mm2s_aclk] [get_bd_pins eth_dma/m_axi_s2mm_aclk] [get_bd_pins rx_axis_switch/aclk] [get_bd_pins rx_fifo/s_axis_aclk] [get_bd_pins tx_axis_switch/aclk] [get_bd_pins txrx_rst_gen/slowest_sync_clk]
   connect_bd_net -net aur_sysrst_inv_Res [get_bd_pins aur_sysrst_inv/Res] [get_bd_pins dma_connect_rx/aresetn] [get_bd_pins dma_connect_tx/aresetn] [get_bd_pins rx_axis_switch/aresetn] [get_bd_pins rx_fifo/s_axis_aresetn] [get_bd_pins tx_axis_switch/aresetn]
-  connect_bd_net -net s_axi_resetn_port [get_bd_ports s_axi_resetn] [get_bd_pins axi_timer_0/s_axi_aresetn] [get_bd_pins dma_connect_sg/aresetn] [get_bd_pins eth_dma/axi_resetn] [get_bd_pins gt_ctl/s_axi_aresetn] [get_bd_pins periph_connect/aresetn] [get_bd_pins rx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins tx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins txrx_rst_gen/ext_reset_in]
+  connect_bd_net -net s_axi_resetn_port [get_bd_ports s_axi_resetn] [get_bd_pins axi_timer_0/s_axi_aresetn] [get_bd_pins dma_connect_sg/aresetn] [get_bd_pins eth_dma/axi_resetn] [get_bd_pins ext_rst_inv/Op1] [get_bd_pins gt_ctl/s_axi_aresetn] [get_bd_pins periph_connect/aresetn] [get_bd_pins rx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins tx_axis_switch/s_axi_ctrl_aresetn] [get_bd_pins txrx_rst_gen/ext_reset_in]
   connect_bd_net -net rstint_0_Dout [get_bd_pins axi_reg_slice_tx/aresetn] [get_bd_pins rstint_0/Dout]
   connect_bd_net -net rstint_1_Dout [get_bd_pins axi_reg_slice_rx/aresetn] [get_bd_pins rstint_1/Dout]
   connect_bd_net -net rstext_0_Dout [get_bd_ports tx_rstn] [get_bd_pins rstext_0/Dout]
