@@ -620,11 +620,9 @@ if { ${g_dma_mem} eq "hbm" } {
    CONFIG.DOUT_WIDTH {1} \
  ] $rstint_1
 
-
   # Create instance: rx_fifo, and set properties
   set rx_fifo [ create_bd_cell -type ip -vlnv xilinx.com:ip:axis_data_fifo:2.0 rx_fifo ]
-  set_property USER_COMMENTS.comment_6 "FIFO depth is set to 256 to fit max CMAC packet 150 x 64bytes = 9600 bytes.
-But functionality is fine for at least depth 16." [get_bd_cells /rx_fifo]
+  set_property USER_COMMENTS.comment_4 "FIFO depth is set to 256 to fit max packet 256 x 32bytes = 8192 bytes." [get_bd_cells /rx_fifo]
   set_property -dict [ list \
    CONFIG.FIFO_DEPTH {256} \
    CONFIG.IS_ACLK_ASYNC {0} \
