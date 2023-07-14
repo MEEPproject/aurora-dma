@@ -34,6 +34,7 @@ Build_aurora_dma:
   script:
     - echo "Building Aurora DMA IP"
     - make generate_ip > build_ip.log
+    - cat build_ip.log
   after_script:
     - grep "IP succesfully packaged" build_ip.log
     - grep "Project generation ended successfully" build_ip.log
