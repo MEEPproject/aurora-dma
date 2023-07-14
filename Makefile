@@ -14,4 +14,4 @@ generate_ip:
 
 
 clean:
-	git clean -f -x -d 
+	git clean -fdx
